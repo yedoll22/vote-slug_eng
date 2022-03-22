@@ -21,6 +21,6 @@ assignees: ''
 - item
 
 # Try (Action Items)
-[ ] Todo 형식으로 작성.
-[ ] Todo 형식으로 작성.
-[ ] Todo 형식으로 작성.
+- [ ] Todo 형식으로 작성.
+- [ ] Todo 형식으로 작성.
+- [ ] Todo 형식으로 작성.
