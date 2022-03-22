@@ -1,7 +1,7 @@
 ---
 name: Issue Task Card
 about: Issue Task Card Template
-title: "[Task] 이슈카드 마크다운 템플릿"
+title: "[Task] task 제목을 적어주세요."
 labels: ''
 assignees: ''
 
