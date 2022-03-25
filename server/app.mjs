@@ -3,8 +3,8 @@ import "express-async-errors";
 import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
-import userRouter from "./router/user.js";
-import voteRouter from "./router/vote.js";
+import userRouter from "./router/user.mjs";
+import voteRouter from "./router/vote.mjs";
 // express1234
 const app = express();
 const port = 8080;
