@@ -3,6 +3,6 @@ import "express-async-errors";
 
 const router = express.Router();
 
-router.get();
+// router.get();
 
 export default router;
