@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
+const path = require("path");
 
-dotenv.config();
+dotenv.config({ path: path.join(process.cwd(), ".env") });
 
 const config = {
   development: {
