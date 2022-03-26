@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const userRouter = require("./router/user");
 const voteRouter = require("./router/vote");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const port = 8080;
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(morgan("tiny"));
 app.use(helmet());
+app.use(cookieParser());
 
 app.use("/user", userRouter);
 app.use("/vote", voteRouter);
