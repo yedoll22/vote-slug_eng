@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      models.user.hasMany(models.vote, { foreignKey: "userId" });
-      models.user.belongsToMany(models.vote, {
+      models.User.hasMany(models.Vote, { foreignKey: "userId" });
+      models.User.belongsToMany(models.Vote, {
         through: "User_vote",
         targetKey: "id",
         foreignKey: "userId",

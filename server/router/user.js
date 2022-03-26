@@ -10,7 +10,7 @@ router.post("/", async (req, res, next) => {
     const { email, password, nickname, gender, dob } = req.body;
     const emailSerach = await User.findone({
       where: {
-        email: email,
+        email,
       },
     });
     if (emailSerach) {
@@ -18,7 +18,7 @@ router.post("/", async (req, res, next) => {
     }
     const nicknameSerach = await User.findone({
       where: {
-        nickname: nickname,
+        nickname,
       },
     });
     if (nicknameSerach) {
@@ -26,11 +26,11 @@ router.post("/", async (req, res, next) => {
     }
     const hashedPassword = await bcrypt.hash(password, 12);
     await User.create({
-      email: email,
-      password: hashedPassword,
-      nickname: nickname,
-      gender: gender,
-      dob: dob,
+      eemail,
+      hashedPassword,
+      nickname,
+      gender,
+      dob,
     });
     return res.status(201).send("User created");
   } catch (err) {
