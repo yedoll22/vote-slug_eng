@@ -8,8 +8,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      models.category.hasOne(vote, { foreignKey: "categoryId" });
+      models.category.hasMany(models.vote, { foreignKey: "categoryId" });
     }
   }
   Category.init(

@@ -1,11 +1,11 @@
-import express from "express";
-import "express-async-errors";
-import cors from "cors";
-import morgan from "morgan";
-import helmet from "helmet";
-import userRouter from "./router/user.mjs";
-import voteRouter from "./router/vote.mjs";
-// express1234
+const express = require("express");
+require("express-async-errors");
+const cors = require("cors");
+const morgan = require("morgan");
+const helmet = require("helmet");
+const userRouter = require("./router/user");
+const voteRouter = require("./router/vote");
+
 const app = express();
 const port = 8080;
 

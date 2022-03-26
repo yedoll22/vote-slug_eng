@@ -1,7 +1,8 @@
 "use strict";
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.addConstraint("User_Votes", {
+    await queryInterface.addConstraint("User_votes", {
       fields: ["userId"],
       type: "foreign key",
       name: "N:M user-vote",
@@ -13,7 +14,7 @@ module.exports = {
       onUpdate: "cascade",
     });
 
-    await queryInterface.addConstraint("User_Votes", {
+    await queryInterface.addConstraint("User_votes", {
       fields: ["voteId"],
       type: "foreign key",
       name: "N:M vote-user",
