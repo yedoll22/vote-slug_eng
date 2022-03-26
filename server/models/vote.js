@@ -8,9 +8,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      models.vote.belongsTo(models.user);
-      models.vote.belongsTo(models.category);
-      models.vote.belongsToMany(models.user, {
+      models.Vote.belongsTo(models.User);
+      models.Vote.belongsTo(models.Category);
+      models.Vote.belongsToMany(models.User, {
         through: "User_vote",
         targetKey: "id",
         foreignKey: "voteId",
