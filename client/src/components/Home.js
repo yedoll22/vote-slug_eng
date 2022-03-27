@@ -5,6 +5,9 @@ import axios from 'axios'
 axios.defaults.withCredentials = true;
 
 export default function Home ({dummyData, accessToken}) {
+//지워주세요
+const test = 1;
+
   const [voteInfo, setVoteInfo] = useState(dummyData);
 
   const categoryHandler = async (e) => {
