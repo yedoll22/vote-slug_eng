@@ -6,6 +6,7 @@ axios.defaults.withCredentials = true;
 
 export default function Home({ dummyData, accessToken }) {
   const [voteInfo, setVoteInfo] = useState(dummyData);
+  // const [isLogin, setIsLogin] = useState()
 
   const categoryHandler = async (e) => {
     const queryString = e.target.value;

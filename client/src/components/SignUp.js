@@ -44,7 +44,7 @@ export default function SignUp() {
           history.push("/");
         })
         .catch((err) => {
-          setErrorMessage("사용할 수 없는 이메일이나 닉네임입니다.");
+          setErrorMessage("사용할 수 없는 이메일이나 닉네임입니다.(중복검사)");
         });
     } else {
       setPwErrorMessage("비밀번호가 일치하지 않습니다");
@@ -62,52 +62,62 @@ export default function SignUp() {
   console.log(passwordInfo.password1, passwordInfo.password2);
 
   return (
-    <div class="flex justify-center items-center h-screen w-full">
-      <div class="w-1/2 bg-white rounded shadow-2xl p-8 m-4">
-        <h1 class="block w-full text-center text-gray-800 text-2xl font-bold mb-6">
+    <div className="flex justify-center items-center h-screen w-full">
+      <div className="w-1/2 bg-white rounded shadow-2xl p-8 m-4">
+        <h1 className="block w-full text-center text-gray-800 text-2xl font-bold mb-6">
           SignUp
         </h1>
+
         <form>
-          <div class="flex flex-col mb-4">
-            <label class="mb-2 font-bold text-lg text-gray-900" for="nickname">
+          <div className="flex flex-col mb-4">
+            <label
+              className="mb-2 font-bold text-lg text-gray-900"
+              htmlFor="nickname"
+            >
               Nickname
             </label>
             <input
-              class="border py-2 px-3 text-grey-800"
+              className="border py-2 px-3 text-grey-800"
               type="text"
               name="nickname"
             />
           </div>
-          <div class="flex flex-col mb-4">
-            <label class="mb-2 font-bold text-lg text-gray-900" for="email">
+          <div className="flex flex-col mb-4">
+            <label
+              className="mb-2 font-bold text-lg text-gray-900"
+              htmlFor="email"
+            >
               e-mail
             </label>
             <input
-              class="border py-2 px-3 text-grey-800"
+              className="border py-2 px-3 text-grey-800"
               type="text"
               name="email"
             />
           </div>
-          <div class="flex flex-col mb-4">
-            <label class="mb-2 font-bold text-lg text-gray-900" for="password">
+          <div className="flex flex-col mb-4">
+            <label
+              className="mb-2 font-bold text-lg text-gray-900"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
-              class="border py-2 px-3 text-grey-800"
+              className="border py-2 px-3 text-grey-800"
               type="text"
               name="password1"
               onChange={passwordHandler("password1")}
             />
           </div>
-          <div class="flex flex-col mb-4">
+          <div className="flex flex-col mb-4">
             <label
-              class="mb-2 font-bold text-lg text-gray-900"
-              for="password_confirm"
+              className="mb-2 font-bold text-lg text-gray-900"
+              htmlFor="password_confirm"
             >
               Password Confirm{" "}
             </label>
             <input
-              class="border py-2 px-3 text-grey-800"
+              className="border py-2 px-3 text-grey-800"
               type="text"
               name="password2"
               onChange={passwordConfirmHandler("password2")}
@@ -115,19 +125,22 @@ export default function SignUp() {
             <div>{pwErrorMessage}</div>
           </div>
 
-          <div class="flex flex-col mb-4">
-            <label class="mb-2 font-bold text-lg text-gray-900" for="gender">
+          <div className="flex flex-col mb-4">
+            <label
+              className="mb-2 font-bold text-lg text-gray-900"
+              htmlFor="gender"
+            >
               Gender
             </label>
-            <div class="relative">
-              <select class="block appearance-none w-full bg-white border border-gray-200 text-gray-900 py-2 px-3 focus:outline-none focus:bg-white focus:border-gray-500">
+            <div className="relative">
+              <select className="block appearance-none w-full bg-white border border-gray-200 text-gray-900 py-2 px-3 focus:outline-none focus:bg-white focus:border-gray-500">
                 <option>Male</option>
                 <option>Female</option>
                 <option>Non binary</option>
               </select>
-              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <svg
-                  class="fill-current h-4 w-4"
+                  className="fill-current h-4 w-4"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                 >
@@ -137,15 +150,15 @@ export default function SignUp() {
             </div>
           </div>
 
-          <div class="flex flex-col mb-4">
+          <div className="flex flex-col mb-4">
             <label
-              class="mb-2 font-bold text-lg text-gray-900"
-              for="dateOfBirth"
+              className="mb-2 font-bold text-lg text-gray-900"
+              htmlFor="dateOfBirth"
             >
               DOB
             </label>
             <input
-              class="border py-2 px-3 text-grey-800"
+              className="border py-2 px-3 text-grey-800"
               type="text"
               name="dateOfBirth"
               placeholder="yyyymmdd"
@@ -153,7 +166,7 @@ export default function SignUp() {
           </div>
           <button
             onClick={onSubmit}
-            class="block bg-teal-400 hover:bg-teal-600 text-white uppercase text-lg mx-auto p-4 rounded"
+            className="block bg-teal-400 hover:bg-teal-600 text-white uppercase text-lg mx-auto p-4 rounded"
           >
             Confirm
           </button>
