@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import VotePost from "./components/VotePost";
 import Login from "./components/Login";
 import VoteDetail from "./components/VoteDetail";
+import SignUp from "./components/SignUp";
 
 function App() {
   const dummyData = [
@@ -44,6 +45,7 @@ function App() {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
+          {/* <Home /> */}
           {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
         </Route>
         <Route path="/home">
@@ -57,6 +59,9 @@ function App() {
             getAccessToken={accessTokenHandler}
             loginHandler={loginHandler}
           />
+        </Route>
+        <Route path="/signup">
+          <SignUp />
         </Route>
         <Route path="/votedetail">
           <VoteDetail accessToken={accessToken} />
