@@ -4,15 +4,15 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
-export default function Home({ dummyData, accessToken }) {
+export default function Home({ voteList, dummyData, accessToken }) {
   const [voteInfo, setVoteInfo] = useState(dummyData);
-  // const [isLogin, setIsLogin] = useState()
+  const [isVoteDetail, setIsVoteDetail] = useState(false);
 
   const categoryHandler = async (e) => {
     const queryString = e.target.value;
     await axios
       .get(
-        "/vote",
+        `${process.env.SERVER_EC2_ENDPOINT}/vote`,
         {
           params: { category: queryString },
         },
@@ -26,16 +26,6 @@ export default function Home({ dummyData, accessToken }) {
         setVoteInfo(res);
       });
   };
-
-  const voteInit = async () => {
-    await axios.get("/vote").then((res) => {
-      setVoteInfo(res);
-    });
-  };
-
-  useEffect(() => {
-    voteInit();
-  }, []);
 
   return (
     <div>
@@ -75,7 +65,11 @@ export default function Home({ dummyData, accessToken }) {
           .sort((a, b) => b.createdAt - a.createdAt)
           .map((voteInfo) => (
             // onclick 이벤트로 해당 voteInfo.id에 해당하는 투표를 투표 상세페이지에서 보여준다
-            <Link to="/votedetail" key={voteInfo.id} className="transition-all">
+            <Link
+              to={`/vote/${voteInfo.id}`}
+              key={voteInfo.id}
+              className="transition-all"
+            >
               <div className="my-4 border-solid border-2 border-red-700">
                 <div>
                   <div>{voteInfo.category}</div>
@@ -94,6 +88,7 @@ export default function Home({ dummyData, accessToken }) {
                       {voteInfo.voteOption2}
                     </button>
                   </div>
+                  <div>{voteInfo.nickname}</div>
                 </div>
               </div>
             </Link>
