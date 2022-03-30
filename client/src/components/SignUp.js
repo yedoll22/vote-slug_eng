@@ -3,63 +3,138 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 export default function SignUp() {
-  const [errorMessage, setErrorMessage] = useState("");
-  const [pwErrorMessage, setPwErrorMessage] = useState("");
-  const [passwordInfo, setPasswordInfo] = useState({
-    password1: "",
-    password2: "",
-  });
+  //이름, 이메일, 비밀번호, 비밀번호 확인
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
 
-  const [userInfo, setUserInfo] = useState({
-    email: "",
-    password: "",
-    nickname: "",
-    gender: "",
-    dob: "",
-  });
+  //오류메시지 상태저장
+  const [nicknameMessage, setNicknameMessage] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
+  const [genderMessage, setGenderMessage] = useState("");
+  const [dobMessage, setDobMessage] = useState();
+  const [signupMessage, setSignupMessage] = useState("");
+
+  // 유효성 검사
+  const [isNickname, setIsNickname] = useState(false);
+  const [isEmail, setIsEmail] = useState(false);
+  const [isGender, setIsGender] = useState(false);
+  const [isPassword, setIsPassword] = useState(false);
+  const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
+  const [isDob, setIsDob] = useState(false);
 
   const history = useHistory();
 
   const onSubmit = async () => {
-    const { email, password, nickname, gender, dob } = userInfo;
-    const { password1, password2 } = passwordInfo;
-
-    if (password1 === password2) {
-      setUserInfo({ password: password2 });
-      await axios
-        .post(
-          "/user",
-          {
-            email,
-            password,
-            nickname,
-            gender,
-            dob,
-          },
-          {
-            "Content-Type": "application/json",
-          }
-        )
-        .then((res) => {
+    await axios
+      .post(
+        `${process.env.SERVER_EC2_ENDPOINT}/user`,
+        {
+          email,
+          password,
+          nickname,
+          gender,
+          dob,
+        },
+        {
+          "Content-Type": "application/json",
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
           history.push("/");
-        })
-        .catch((err) => {
-          setErrorMessage("사용할 수 없는 이메일이나 닉네임입니다.(중복검사)");
-        });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const onChangeNickname = (e) => {
+    setNickname(e.target.value);
+
+    if (nickname === undefined) {
+      setNicknameMessage("닉네임을 입력해주세요");
+      setIsNickname(false);
     } else {
-      setPwErrorMessage("비밀번호가 일치하지 않습니다");
+      setNicknameMessage("닉네임을 입력하셨습니다");
+      setIsNickname(true);
     }
   };
 
-  const passwordHandler = (key) => (e) => {
-    setPasswordInfo({ [key]: e.target.value });
+  const onChangeEmail = (e) => {
+    const emailRegex =
+      /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+    const emailCurrent = e.target.value;
+    setEmail(emailCurrent);
+
+    if (!emailRegex.test(emailCurrent)) {
+      setEmailMessage("이메일 형식이 틀렸습니다");
+      setIsEmail(false);
+    } else {
+      setEmailMessage("올바른 이메일 형식입니다");
+      setIsEmail(true);
+    }
   };
 
-  const passwordConfirmHandler = (key) => (e) => {
-    setPasswordInfo({ ...passwordInfo, [key]: e.target.value });
+  const onChangePassword = (e) => {
+    const passwordRegex =
+      /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
+    const passwordCurrent = e.target.value;
+    setPassword(passwordCurrent);
+
+    if (!passwordRegex.test(passwordCurrent)) {
+      setPasswordMessage(
+        "숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요"
+      );
+      setIsPassword(false);
+    } else {
+      setPasswordMessage("안전한 비밀번호입니다");
+      setIsPassword(true);
+    }
   };
 
-  console.log(passwordInfo.password1, passwordInfo.password2);
+  const onChangePasswordConfirm = (e) => {
+    const passwordConfirmCurrent = e.target.value;
+    setPasswordConfirm(passwordConfirmCurrent);
+
+    if (password === passwordConfirmCurrent) {
+      setPasswordConfirmMessage("비밀번호가 일치합니다");
+      setIsPasswordConfirm(true);
+    } else {
+      setPasswordConfirmMessage("비밀번호가 일치하지 않습니다");
+      setIsPasswordConfirm(false);
+    }
+  };
+
+  const onChangeGender = (e) => {
+    const genderCurrent = e.target.value;
+    setGender(genderCurrent);
+    if (gender === null) {
+      setGenderMessage("");
+      setIsGender(false);
+    } else {
+      setGenderMessage("성별을 선택하셨습니다");
+      setIsGender(true);
+    }
+  };
+
+  const onChangeDob = (e) => {
+    const dobCurrent = e.target.value;
+    setDob(dobCurrent);
+    if (dob === undefined) {
+      setDobMessage("");
+      setIsDob(false);
+    } else {
+      setDobMessage("생년월일을 선택하셨습니다");
+      setIsDob(true);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen w-full">
@@ -68,7 +143,7 @@ export default function SignUp() {
           SignUp
         </h1>
 
-        <form>
+        <div>
           <div className="flex flex-col mb-4">
             <label
               className="mb-2 font-bold text-lg text-gray-900"
@@ -77,10 +152,12 @@ export default function SignUp() {
               Nickname
             </label>
             <input
+              onChange={onChangeNickname}
               className="border py-2 px-3 text-grey-800"
               type="text"
               name="nickname"
             />
+            {nickname.length > 0 && <span>{nicknameMessage}</span>}
           </div>
           <div className="flex flex-col mb-4">
             <label
@@ -90,10 +167,12 @@ export default function SignUp() {
               e-mail
             </label>
             <input
+              onChange={onChangeEmail}
               className="border py-2 px-3 text-grey-800"
               type="text"
               name="email"
             />
+            {email.length > 0 && <span>{emailMessage}</span>}
           </div>
           <div className="flex flex-col mb-4">
             <label
@@ -103,26 +182,29 @@ export default function SignUp() {
               Password
             </label>
             <input
+              onChange={onChangePassword}
               className="border py-2 px-3 text-grey-800"
-              type="text"
+              type="password"
               name="password1"
-              onChange={passwordHandler("password1")}
             />
+            {password.length > 0 && <span>{passwordMessage}</span>}
           </div>
           <div className="flex flex-col mb-4">
             <label
               className="mb-2 font-bold text-lg text-gray-900"
               htmlFor="password_confirm"
             >
-              Password Confirm{" "}
+              Password Confirm
             </label>
             <input
+              onChange={onChangePasswordConfirm}
               className="border py-2 px-3 text-grey-800"
-              type="text"
+              type="password"
               name="password2"
-              onChange={passwordConfirmHandler("password2")}
             />
-            <div>{pwErrorMessage}</div>
+            {passwordConfirm.length > 0 && (
+              <span>{passwordConfirmMessage}</span>
+            )}
           </div>
 
           <div className="flex flex-col mb-4">
@@ -133,11 +215,16 @@ export default function SignUp() {
               Gender
             </label>
             <div className="relative">
-              <select className="block appearance-none w-full bg-white border border-gray-200 text-gray-900 py-2 px-3 focus:outline-none focus:bg-white focus:border-gray-500">
+              <select
+                onChange={onChangeGender}
+                className="block appearance-none w-full bg-white border border-gray-200 text-gray-900 py-2 px-3 focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <option>{null}</option>
                 <option>Male</option>
                 <option>Female</option>
                 <option>Non binary</option>
               </select>
+              {gender.length > 0 && <span>{genderMessage}</span>}
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                 <svg
                   className="fill-current h-4 w-4"
@@ -158,21 +245,32 @@ export default function SignUp() {
               DOB
             </label>
             <input
+              onChange={onChangeDob}
               className="border py-2 px-3 text-grey-800"
-              type="text"
+              type="date"
               name="dateOfBirth"
               placeholder="yyyymmdd"
             />
+            {dob.length > 0 && <span>{dobMessage}</span>}
           </div>
           <button
+            disabled={
+              !(
+                isNickname &&
+                isEmail &&
+                isPassword &&
+                isPasswordConfirm &&
+                isGender &&
+                isDob
+              )
+            }
             onClick={onSubmit}
             className="block bg-teal-400 hover:bg-teal-600 text-white uppercase text-lg mx-auto p-4 rounded"
           >
             Confirm
           </button>
-          <div className="text-red">{errorMessage}</div>
-        </form>
-        {/* <a class="block w-full text-center no-underline mt-4 text-sm text-gray-700 hover:text-gray-900" href="/login">Already have an account?</a> */}
+          <div className="text-red">{signupMessage}</div>
+        </div>
       </div>
     </div>
   );

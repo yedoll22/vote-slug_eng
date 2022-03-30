@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Login({ loginHandler, getAccessToken }) {
+  const [loginErrorMessage, setLoginErrorMessage] = useState("");
   const [userInfo, setUserInfo] = useState({ email: "", password: "" });
 
   const inputHandler = (e) => {
@@ -13,7 +14,7 @@ export default function Login({ loginHandler, getAccessToken }) {
     const { email, password } = userInfo;
     await axios
       .post(
-        "",
+        `${process.env.SERVER_EC2_ENDPOINT}/user/login`,
         { email, password },
         {
           headers: { "Content-Type": "application/json" },
@@ -21,10 +22,16 @@ export default function Login({ loginHandler, getAccessToken }) {
         }
       )
       .then((res) => {
-        loginHandler();
-        getAccessToken(res.accessToken);
+        if (res.data.message === "wrong email") {
+          setLoginErrorMessage("존재하지 않는 이메일입니다.");
+        } else if (res.data.message === "wrong password") {
+          setLoginErrorMessage("비밀번호가 틀렸습니다.");
+        } else {
+          loginHandler();
+          getAccessToken(res.data.accessToken);
+        }
       })
-      .catch();
+      .catch((err) => console.log(err));
   };
 
   return (

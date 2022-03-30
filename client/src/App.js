@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Home from "./components/Home";
 import VotePost from "./components/VotePost";
 import Login from "./components/Login";
 import VoteDetail from "./components/VoteDetail";
 import SignUp from "./components/SignUp";
+import axios from "axios";
 
 function App() {
   const dummyData = [
@@ -31,8 +32,26 @@ function App() {
       createdAt: 2002,
     },
   ];
+
+  const [voteList, setVoteList] = useState();
   const [isLogin, setIsLogin] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+
+  const voteInit = async () => {
+    await axios
+      .get("/vote", {
+        header: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setVoteList(res);
+      });
+  };
+
+  useEffect(() => {
+    voteInit();
+  }, []);
 
   const accessTokenHandler = (token) => {
     setAccessToken(token);
@@ -41,6 +60,7 @@ function App() {
   const loginHandler = () => {
     setIsLogin(true);
   };
+
   return (
     <BrowserRouter>
       <Switch>
@@ -49,8 +69,16 @@ function App() {
           {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
         </Route>
         <Route path="/home">
-          <Home dummyData={dummyData} accessToken={accessToken} />
+          <Home
+            voteList={voteList}
+            dummyData={dummyData}
+            accessToken={accessToken}
+          />
         </Route>
+        <Route
+          path="/vote/:id"
+          render={() => <VoteDetail dummyData={dummyData} />}
+        />
         <Route path="/votepost">
           <VotePost accessToken={accessToken} />
         </Route>
@@ -62,9 +90,6 @@ function App() {
         </Route>
         <Route path="/signup">
           <SignUp />
-        </Route>
-        <Route path="/votedetail">
-          <VoteDetail accessToken={accessToken} />
         </Route>
       </Switch>
     </BrowserRouter>
