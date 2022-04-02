@@ -11,6 +11,32 @@ import Password from "./components/Password";
 import axios from "axios";
 
 function App() {
+  const category = [
+    {
+      title: "연애",
+      id: "1",
+    },
+    {
+      title: "음식",
+      id: "2",
+    },
+    {
+      title: "여행",
+      id: "3",
+    },
+    {
+      title: "일상",
+      id: "4",
+    },
+    {
+      title: "패션",
+      id: "5",
+    },
+    {
+      title: "etc",
+      id: "6",
+    },
+  ];
   const dummyData = [
     {
       id: 1,
@@ -36,25 +62,8 @@ function App() {
     },
   ];
 
-  const [voteList, setVoteList] = useState();
   const [isLogin, setIsLogin] = useState(false);
   const [accessToken, setAccessToken] = useState("");
-
-  const voteInit = async () => {
-    await axios
-      .get("/vote", {
-        header: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        setVoteList(res);
-      });
-  };
-
-  useEffect(() => {
-    voteInit();
-  }, []);
 
   const accessTokenHandler = (token) => {
     setAccessToken(token);
@@ -72,15 +81,14 @@ function App() {
         </Route>
         <Route path="/home">
           <Home
-            voteList={voteList}
+            category={category}
             dummyData={dummyData}
             accessToken={accessToken}
           />
         </Route>
-        <Route
-          path="/vote/:id"
-          render={() => <VoteDetail dummyData={dummyData} />}
-        />
+        <Route path="/vote/:voteId">
+          <VoteDetail />
+        </Route>
         <Route path="/votepost">
           <VotePost accessToken={accessToken} />
         </Route>

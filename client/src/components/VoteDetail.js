@@ -1,20 +1,21 @@
+import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 
-export default function VoteDetail({ dummyData, history, match }) {
+export default function VoteDetail() {
   const [data, setData] = useState({});
-  const { id } = match.params;
-
-  console.log(dummyData);
-  const getVoteById = () => {
-    const array = dummyData.filter((x) => x.id === id);
-    if (array.length === 1) {
-      return array[0];
-    }
-    return null;
-  };
+  const { voteId } = useParams();
+  const history = useHistory();
 
   useEffect(() => {
-    setData(getVoteById(id));
+    axios
+      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/${voteId}`)
+      .then((result) => {
+        setData(result.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return (
@@ -26,11 +27,11 @@ export default function VoteDetail({ dummyData, history, match }) {
           <>
             <div className="post-view-row">
               <label>제목</label>
-              <label>{data.title}</label>
+              <label>{data.voteTitle}</label>
             </div>
             <div className="post-view-row">
               <label>카테고리</label>
-              <label>{data.category}</label>
+              <label>{data.Category?.categoryTitle}</label>
             </div>
             <div className="post-view-row">
               <label>옵션1</label>
@@ -38,16 +39,13 @@ export default function VoteDetail({ dummyData, history, match }) {
             </div>
             <div className="post-view-row">
               <label>옵션2</label>
-              <div>{data.voteOption1}</div>
+              <div>{data.voteOption2}</div>
             </div>
           </>
         ) : (
           "해당 게시글을 찾을 수 없습니다."
         )}
-        <button
-          className="post-view-go-list-btn"
-          onClick={() => history.goBack()}
-        >
+        <button className="post-view-go-list-btn" onClick={() => {}}>
           목록으로 돌아가기
         </button>
       </div>
