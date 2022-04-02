@@ -12,17 +12,19 @@ const port = 8080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTION"],
+  })
+);
 app.use(morgan("tiny"));
 app.use(helmet());
 app.use(cookieParser());
 
 app.use("/user", userRouter);
 app.use("/vote", voteRouter);
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
 
 app.use((req, res, next) => {
   res.status(404).send("Not Found");
