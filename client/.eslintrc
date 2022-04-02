@@ -11,7 +11,12 @@
   "env": {
     "node": true
   },
-  "ignorePatterns": ["node_modules/", "postcss.config.js", ".prettierrc"],
+  "ignorePatterns": [
+    "node_modules/",
+    "postcss.config.js",
+    ".prettierrc",
+    "tailwind.config.js"
+  ],
   "rules": {
     "prettier/prettier": "error",
     "react/jsx-filename-extension": 0,

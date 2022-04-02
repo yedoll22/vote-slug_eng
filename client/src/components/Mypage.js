@@ -1,77 +1,92 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useHistory, Link } from "react-router-dom";
 
-export default function Mypage() {
+export default function Mypage(props) {
+  const history = useHistory();
+  const [userInfo, setUserInfo] = useState({});
+  // useEffect(() => {
+  //   getUserInfo();
+  // }, []);
+
+  const getUserInfo = async () => {
+    await axios
+      .get(`${process.env.SERVER_EC2_ENDPOINT}/user/mypage`, {
+        headers: {
+          Authorization: `Bearer ${props.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          const { userid, email, nickname, gender, dob, createAt } = res.data;
+          setUserInfo({ userid, email, nickname, gender, dob, createAt });
+        } else if (res.status === 500) {
+          //500일경우서버네트워크문제라고알려주기
+        } else {
+          //로그인이필요한페이지입니다모달창
+          history.push("/login");
+        }
+      });
+  };
+
+  const deleteUserInfo = async () => {
+    await axios
+      .delete(`${process.env.SERVER_EC2_ENDPOINT}/user`, {
+        headers: {
+          Authorization: `Bearer ${props.accessToken}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          history.push("/home");
+        } else if (res.status === 500) {
+          // 500일경우서버네트워크문제라고알려주기
+        } else {
+          // 로그인이필요한페이지입니다모달창
+          history.push("/login");
+        }
+      });
+  };
+
   return (
-    <div className="flex justify-center items-center h-screen w-full">
-      <div className="w-1/2 bg-white rounded shadow-2xl p-8 m-4">
-        <h1 className="block w-full text-center text-gray-800 text-2xl font-bold mb-6">
-          My profile
-        </h1>
-
-        <div className="grid grid-cols-5">
-          <label
-            className="col-span-2 mb-2 font-bold text-lg text-gray-900"
-            for="email"
-          >
-            email
-          </label>
-          <div className="col-span-2 text-grey-800">email</div>
+    <div>
+      <header>
+        <h1>MY Profile</h1>
+      </header>
+      <section>
+        <div>
+          <div>email</div>
+          <div>{userInfo.email}</div>
         </div>
-        <div className="grid grid-cols-5">
-          <label
-            className="col-span-2 mb-2 font-bold text-lg text-gray-900"
-            for="nickname"
-          >
-            Nickname
-          </label>
-          <div className="col-span-2 text-grey-800">Nickname</div>
+        <div>
+          <div>Nickname</div>
+          <div>{userInfo.nickname}</div>
+          <Link to="/nickname">edit</Link>
+        </div>
+        <div>
+          <div>Gender</div>
+          <div>{userInfo.gender}</div>
+        </div>
+        <div>
+          <div>Date of birth</div>
+          <div>{userInfo.dob}</div>
+        </div>
+        <div>
+          <Link to="/password">Password edit</Link>
           <button
-            className="inline bg-teal-400 hover:bg-teal-600 text-white text-lg rounded"
-            type="Edit"
-          >
-            Edit
-          </button>
-        </div>
-        <div className="grid grid-cols-5">
-          <label
-            className="col-span-2 mb-2 font-bold text-lg text-gray-900"
-            for="gender"
-          >
-            Gender
-          </label>
-          <div className="col-span-2 text-grey-800">Gender</div>
-        </div>
-        <div className="grid grid-cols-5">
-          <label
-            className="col-span-2 mb-2 font-bold text-lg text-gray-900"
-            for="dateOfBirth"
-          >
-            DOB
-          </label>
-          <div className="col-span-2 text-grey-800">DOB</div>
-        </div>
-        <button
-          className="block bg-teal-400 hover:bg-teal-600 text-white mx-auto rounded"
-          type="submit"
-        >
-          password edit
-        </button>
-        <div className="grid grid-cols-2">
-          <button
-            className="bg-teal-400 hover:bg-teal-600 text-white text-lg mx-auto rounded"
-            type="submit"
+            onClick={() => {
+              // deleteUserInfo;
+            }}
           >
             탈퇴
           </button>
-          <button
-            className="bg-teal-400 hover:bg-teal-600 text-white text-lg mx-auto rounded"
-            type="submit"
-          >
-            Home
-          </button>
+          <Link to="/home">Home</Link>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
