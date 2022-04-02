@@ -11,7 +11,7 @@ export default function Mypage(props) {
 
   const getUserInfo = async () => {
     await axios
-      .get(`${process.env.SERVER_EC2_ENDPOINT}/user/mypage`, {
+      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/mypage`, {
         headers: {
           Authorization: `Bearer ${props.accessToken}`,
           "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export default function Mypage(props) {
 
   const deleteUserInfo = async () => {
     await axios
-      .delete(`${process.env.SERVER_EC2_ENDPOINT}/user`, {
+      .delete(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user`, {
         headers: {
           Authorization: `Bearer ${props.accessToken}`,
           "Content-Type": "application/json",
