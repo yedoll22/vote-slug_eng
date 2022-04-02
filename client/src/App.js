@@ -5,6 +5,9 @@ import VotePost from "./components/VotePost";
 import Login from "./components/Login";
 import VoteDetail from "./components/VoteDetail";
 import SignUp from "./components/SignUp";
+import Mypage from "./components/Mypage";
+import Nickname from "./components/Nickname";
+import Password from "./components/Password";
 import axios from "axios";
 
 function App() {
@@ -65,7 +68,6 @@ function App() {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          {/* <Home /> */}
           {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
         </Route>
         <Route path="/home">
@@ -90,6 +92,15 @@ function App() {
         </Route>
         <Route path="/signup">
           <SignUp />
+        </Route>
+        <Route path="/mypage">
+          <Mypage />
+        </Route>
+        <Route path="/nickname">
+          <Nickname />
+        </Route>
+        <Route path="/password">
+          <Password />
         </Route>
       </Switch>
     </BrowserRouter>

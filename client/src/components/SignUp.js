@@ -1,6 +1,8 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+
+axios.defaults.withCredentials = true;
 
 export default function SignUp() {
   //이름, 이메일, 비밀번호, 비밀번호 확인
@@ -18,7 +20,8 @@ export default function SignUp() {
   const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
   const [genderMessage, setGenderMessage] = useState("");
   const [dobMessage, setDobMessage] = useState();
-  const [signupMessage, setSignupMessage] = useState("");
+  const [emailSignupMessage, setEmailSignupMessage] = useState("");
+  const [nicknameSignupMessage, setNicknameSignupMessage] = useState("");
 
   // 유효성 검사
   const [isNickname, setIsNickname] = useState(false);
@@ -27,13 +30,25 @@ export default function SignUp() {
   const [isPassword, setIsPassword] = useState(false);
   const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
   const [isDob, setIsDob] = useState(false);
+  const [isRegistedEmail, setIsRegistedEmail] = useState(false);
+  const [isRegistedNickname, setIsRegistedNickname] = useState(false);
+
+  useEffect(() => {
+    if (password.length <= 7 || password.length >= 17) {
+      setPasswordMessage("비밀번호는 8자리 이상　16자리 이하로 입력해주세요");
+      setIsPassword(false);
+    } else {
+      setPasswordMessage("안전한 비밀번호입니다");
+      setIsPassword(true);
+    }
+  }, [password]);
 
   const history = useHistory();
 
   const onSubmit = async () => {
     await axios
       .post(
-        `${process.env.SERVER_EC2_ENDPOINT}/user`,
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user`,
         {
           email,
           password,
@@ -46,23 +61,33 @@ export default function SignUp() {
         }
       )
       .then((res) => {
-        if (res.status === 200) {
-          history.push("/");
-        }
+        history.push("/");
       })
       .catch((err) => {
-        console.log(err);
+        if (err.response.data.message === "email overlap") {
+          setEmailSignupMessage("이미 가입된 이메일입니다");
+          setIsRegistedEmail(true);
+        } else if (err.response.data.message === "nickname overlap") {
+          setNicknameSignupMessage("이미 사용 중인 닉네임입니다");
+          setIsRegistedNickname(true);
+        } else {
+          console.log(err);
+        }
       });
   };
 
   const onChangeNickname = (e) => {
-    setNickname(e.target.value);
+    const nicknameRegex = /^[가-힣A-Za-z0-9]{3,12}$/;
+    const currentNickname = e.target.value;
+    setNickname(currentNickname);
 
-    if (nickname === undefined) {
-      setNicknameMessage("닉네임을 입력해주세요");
+    if (!nicknameRegex.test(currentNickname)) {
+      setNicknameMessage(
+        "닉네임은 한글, 영어, 숫자 최소 3자~12자리까지 설정 가능합니다."
+      );
       setIsNickname(false);
     } else {
-      setNicknameMessage("닉네임을 입력하셨습니다");
+      setNicknameMessage("사용가능한　닉네임을 입력하셨습니다");
       setIsNickname(true);
     }
   };
@@ -83,20 +108,8 @@ export default function SignUp() {
   };
 
   const onChangePassword = (e) => {
-    const passwordRegex =
-      /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
     const passwordCurrent = e.target.value;
     setPassword(passwordCurrent);
-
-    if (!passwordRegex.test(passwordCurrent)) {
-      setPasswordMessage(
-        "숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요"
-      );
-      setIsPassword(false);
-    } else {
-      setPasswordMessage("안전한 비밀번호입니다");
-      setIsPassword(true);
-    }
   };
 
   const onChangePasswordConfirm = (e) => {
@@ -135,142 +148,148 @@ export default function SignUp() {
       setIsDob(true);
     }
   };
-
   return (
-    <div className="flex justify-center items-center h-screen w-full">
-      <div className="w-1/2 bg-white rounded shadow-2xl p-8 m-4">
-        <h1 className="block w-full text-center text-gray-800 text-2xl font-bold mb-6">
-          SignUp
-        </h1>
-
-        <div>
-          <div className="flex flex-col mb-4">
-            <label
-              className="mb-2 font-bold text-lg text-gray-900"
-              htmlFor="nickname"
+    <div className="pt-10">
+      <div className="ml-5 mb-10 font-medium text-xl">회원가입</div>
+      <div className="px-5">
+        <div className="flex flex-col pb-[18px] mb-2">
+          <span className="ml-4 text-[#222222] font-medium text-base mb-2">
+            이메일
+          </span>
+          <input
+            type="text"
+            onChange={onChangeEmail}
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            placeholder="이메일을 입력하세요."
+          ></input>
+          {isRegistedEmail ? (
+            <span>{emailSignupMessage}</span>
+          ) : email.length > 0 ? (
+            <span
+              className={
+                isEmail ? "text-sm text-indigo-500" : "text-sm text-red-400"
+              }
             >
-              Nickname
-            </label>
-            <input
-              onChange={onChangeNickname}
-              className="border py-2 px-3 text-grey-800"
-              type="text"
-              name="nickname"
-            />
-            {nickname.length > 0 && <span>{nicknameMessage}</span>}
-          </div>
-          <div className="flex flex-col mb-4">
-            <label
-              className="mb-2 font-bold text-lg text-gray-900"
-              htmlFor="email"
-            >
-              e-mail
-            </label>
-            <input
-              onChange={onChangeEmail}
-              className="border py-2 px-3 text-grey-800"
-              type="text"
-              name="email"
-            />
-            {email.length > 0 && <span>{emailMessage}</span>}
-          </div>
-          <div className="flex flex-col mb-4">
-            <label
-              className="mb-2 font-bold text-lg text-gray-900"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              onChange={onChangePassword}
-              className="border py-2 px-3 text-grey-800"
-              type="password"
-              name="password1"
-            />
-            {password.length > 0 && <span>{passwordMessage}</span>}
-          </div>
-          <div className="flex flex-col mb-4">
-            <label
-              className="mb-2 font-bold text-lg text-gray-900"
-              htmlFor="password_confirm"
-            >
-              Password Confirm
-            </label>
-            <input
-              onChange={onChangePasswordConfirm}
-              className="border py-2 px-3 text-grey-800"
-              type="password"
-              name="password2"
-            />
-            {passwordConfirm.length > 0 && (
-              <span>{passwordConfirmMessage}</span>
-            )}
-          </div>
-
-          <div className="flex flex-col mb-4">
-            <label
-              className="mb-2 font-bold text-lg text-gray-900"
-              htmlFor="gender"
-            >
-              Gender
-            </label>
-            <div className="relative">
-              <select
-                onChange={onChangeGender}
-                className="block appearance-none w-full bg-white border border-gray-200 text-gray-900 py-2 px-3 focus:outline-none focus:bg-white focus:border-gray-500"
-              >
-                <option>{null}</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Non binary</option>
-              </select>
-              {gender.length > 0 && <span>{genderMessage}</span>}
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg
-                  className="fill-current h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col mb-4">
-            <label
-              className="mb-2 font-bold text-lg text-gray-900"
-              htmlFor="dateOfBirth"
-            >
-              DOB
-            </label>
-            <input
-              onChange={onChangeDob}
-              className="border py-2 px-3 text-grey-800"
-              type="date"
-              name="dateOfBirth"
-              placeholder="yyyymmdd"
-            />
-            {dob.length > 0 && <span>{dobMessage}</span>}
-          </div>
-          <button
-            disabled={
-              !(
-                isNickname &&
-                isEmail &&
-                isPassword &&
-                isPasswordConfirm &&
-                isGender &&
-                isDob
-              )
-            }
-            onClick={onSubmit}
-            className="block bg-teal-400 hover:bg-teal-600 text-white uppercase text-lg mx-auto p-4 rounded"
-          >
-            Confirm
-          </button>
-          <div className="text-red">{signupMessage}</div>
+              {emailMessage}
+            </span>
+          ) : null}
         </div>
+        <div className="flex flex-col pb-[18px] mb-2">
+          <span className="ml-4 text-[#222222] font-medium text-base mb-2">
+            비밀번호
+          </span>
+          <input
+            type="password"
+            onChange={onChangePassword}
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            placeholder="비밀번호를 입력하세요."
+          ></input>
+          {password.length > 0 && (
+            <span
+              className={
+                isPassword ? "text-sm text-indigo-500" : "text-sm text-red-400"
+              }
+            >
+              {passwordMessage}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col pb-[18px] mb-2">
+          <span className="ml-4 text-[#222222] font-medium text-base mb-2">
+            비밀번호 확인
+          </span>
+          <input
+            type="password"
+            onChange={onChangePasswordConfirm}
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            placeholder="비밀번호 확인을 입력하세요."
+          ></input>
+          {passwordConfirm.length > 0 && (
+            <span
+              className={
+                isPasswordConfirm
+                  ? "text-sm text-indigo-500"
+                  : "text-sm text-red-400"
+              }
+            >
+              {passwordConfirmMessage}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-col pb-[18px] mb-2">
+          <span className="ml-4 text-[#222222] font-medium text-base mb-2">
+            닉네임
+          </span>
+          <input
+            type="text"
+            onChange={onChangeNickname}
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            placeholder="닉네임을 입력하세요."
+          ></input>
+          {isRegistedNickname ? (
+            <span>{nicknameSignupMessage}</span>
+          ) : nickname.length > 0 ? (
+            <span
+              className={
+                isNickname ? "text-sm text-indigo-500" : "text-sm text-red-400"
+              }
+            >
+              {nicknameMessage}
+            </span>
+          ) : null}
+        </div>
+        <div className="flex flex-col pb-[18px] mb-2">
+          <span className="ml-4 text-[#222222] font-medium text-base mb-2">
+            성별
+          </span>
+          <div className="flex relative">
+            <select
+              onChange={onChangeGender}
+              className="pl-4 rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo text-sm font-normal bg-transparent z-20 focus:outline-VsGreen"
+              required
+            >
+              <option className="hidden" disabled selected>
+                성별을 선택해주세요．
+              </option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Non binary</option>
+            </select>
+            <img
+              className="absolute right-2 top-3 z-10"
+              src="images/dropdown.svg"
+              alt=""
+            />
+          </div>
+        </div>
+        <div className="flex flex-col pb-[18px] mb-2">
+          <span className="ml-4 text-[#222222] font-medium text-base mb-2">
+            생년월일
+          </span>
+          <input
+            type="text"
+            onChange={onChangeDob}
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            placeholder="생년월일 8자리를 입력하세요."
+          ></input>
+        </div>
+
+        <button
+          disabled={
+            !(
+              isNickname &&
+              isEmail &&
+              isPassword &&
+              isPasswordConfirm &&
+              isGender &&
+              isDob
+            )
+          }
+          onClick={onSubmit}
+          className="bg-VsGreen rounded-[24px] w-full h-11 text-xl font-medium"
+        >
+          회원가입 완료
+        </button>
       </div>
     </div>
   );
