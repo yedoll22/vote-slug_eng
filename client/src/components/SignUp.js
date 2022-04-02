@@ -35,7 +35,7 @@ export default function SignUp() {
 
   useEffect(() => {
     if (password.length <= 7 || password.length >= 17) {
-      setPasswordMessage("비밀번호는 8자리 이상　16자리 이하로 입력해주세요");
+      setPasswordMessage("비밀번호는 8자리 이상 16자리 이하로 입력해주세요");
       setIsPassword(false);
     } else {
       setPasswordMessage("안전한 비밀번호입니다");
@@ -87,7 +87,7 @@ export default function SignUp() {
       );
       setIsNickname(false);
     } else {
-      setNicknameMessage("사용가능한　닉네임을 입력하셨습니다");
+      setNicknameMessage("사용가능한 닉네임을 입력하셨습니다");
       setIsNickname(true);
     }
   };
