@@ -11,17 +11,16 @@ export default function VotePost({ accessToken }) {
     voteOption1: "",
     voteOption2: "",
   });
+  const history = useHistory();
 
   const votePostinputHandler = (key) => (e) => {
     setVotePostinfo({ ...votePostinfo, [key]: e.target.value });
   };
 
-  const history = useHistory();
-
   const votePostHandler = async () => {
     await axios
       .post(
-        "/vote",
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`,
         {
           voteTitle: votePostinfo.voteTitle,
           category: votePostinfo.category,
@@ -29,16 +28,27 @@ export default function VotePost({ accessToken }) {
           voteOption2: votePostinfo.voteOption2,
         },
         {
-          "Content-Type": "application/json",
-        },
-        {
           header: {
             Authorization: `Bearer ${accessToken}`,
           },
+        },
+        {
+          "Content-Type": "application/json",
         }
       )
       .then((res) => {
         history.push("/home");
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 ||
+          err.response.status === 403 ||
+          err.response.status === 404
+        ) {
+          history.push("/login");
+        } else {
+          console.log(err);
+        }
       });
   };
   return (
@@ -50,13 +60,14 @@ export default function VotePost({ accessToken }) {
           src="images/mypage.svg"
         ></img>
       </div>
-      <div class="h-2 w-full bg-[#f2f2f2]"></div>
+      <div className="h-2 w-full bg-[#f2f2f2]"></div>
       <div className="pt-6 px-5 pb-10">
         <div className="mb-[50px]">
           <div className="text-[20px] font-medium mb-10">투표 만들기</div>
           <div className="pb-[18px] mb-2">
             <div className="pl-4 mb-2">제목</div>
             <textarea
+              onChange={votePostinputHandler("voteTitle")}
               placeholder="투표 제목을 입력하세요."
               type="text"
               className="min-h-[76px] border-[1px] border-[#D3D3D3] w-full px-[16px] placeholder:leading-[20px] py-[20px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:outline-VsGreen break-all no-scrollbar"
@@ -65,6 +76,7 @@ export default function VotePost({ accessToken }) {
           <div className="pb-[18px] mb-2">
             <div className="pl-4 mb-2">선택지 1</div>
             <textarea
+              onChange={votePostinputHandler("voteOption1")}
               placeholder="선택지의 내용을 입력하세요."
               type="text"
               className="min-h-[76px] border-[1px] border-[#D3D3D3] w-full px-[16px] placeholder:leading-[20px] py-[20px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:outline-VsGreen break-all no-scrollbar"
@@ -73,6 +85,7 @@ export default function VotePost({ accessToken }) {
           <div className="pb-[18px] mb-2">
             <div className="pl-4 mb-2">선택지 2</div>
             <textarea
+              onChange={votePostinputHandler("voteOption2")}
               placeholder="선택지의 내용을 입력하세요."
               type="text"
               className="h-[76px] border-[1px] border-[#D3D3D3] w-full placeholder:leading-[20px] py-[20px] px-[16px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:outline-VsGreen break-all no-scrollbar"
@@ -82,11 +95,12 @@ export default function VotePost({ accessToken }) {
             <div className="pl-4 mb-2">카테고리</div>
             <div className="flex relative">
               <select
+                onChange={votePostinputHandler("category")}
                 className="pl-4 rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo text-sm font-normal bg-transparent z-20 focus:outline-VsGreen"
                 required
               >
-                <option className="hidden" disabled selected>
-                  카테고리를 선택하세요．
+                <option className="hidden" defaultValue>
+                  카테고리를 선택하세요.
                 </option>
                 <option>연애</option>
                 <option>일상</option>
@@ -107,7 +121,10 @@ export default function VotePost({ accessToken }) {
           <button className="text-[14px] font-medium text-[#7A7A7A] px-[19px] mr-[1px] h-9">
             취소
           </button>
-          <button className="bg-VsGreen rounded-[8px] h-9 px-4 text-[14px] font-medium">
+          <button
+            onClick={votePostHandler}
+            className="bg-VsGreen rounded-[8px] h-9 px-4 text-[14px] font-medium"
+          >
             투표 만들기
           </button>
         </div>

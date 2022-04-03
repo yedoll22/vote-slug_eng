@@ -6,9 +6,10 @@ axios.defaults.withCredentials = true;
 
 export default function Home({ category, accessToken }) {
   const [voteInfo, setVoteInfo] = useState([]);
+  const history = useHistory();
 
   const categoryHandler = async (e) => {
-    const queryString = e.target.value;
+    const queryString = encodeURIComponent(e.target.value);
     await axios
       .get(
         `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`,
@@ -23,6 +24,17 @@ export default function Home({ category, accessToken }) {
       )
       .then((res) => {
         setVoteInfo(res.data);
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 ||
+          err.response.status === 403 ||
+          err.response.status === 404
+        ) {
+          history.push("/login");
+        } else {
+          console.log(err);
+        }
       });
   };
 
@@ -42,8 +54,63 @@ export default function Home({ category, accessToken }) {
   useEffect(() => {
     voteListHandler();
   }, []);
+  const voteUserPostHandler = async () => {
+    await axios
+      .get(
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`,
+        {
+          params: { type: "posted" },
+        },
+        {
+          header: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        setVoteInfo(res.data);
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 ||
+          err.response.status === 403 ||
+          err.response.status === 404
+        ) {
+          history.push("/login");
+        } else {
+          console.log(err);
+        }
+      });
+  };
 
-  const history = useHistory();
+  const voteUserParticipateHandler = async () => {
+    await axios
+      .get(
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`,
+        {
+          params: { type: "participated" },
+        },
+        {
+          header: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
+      .then((res) => {
+        setVoteInfo(res.data);
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 ||
+          err.response.status === 403 ||
+          err.response.status === 404
+        ) {
+          history.push("/login");
+        } else {
+          console.log(err);
+        }
+      });
+  };
   return (
     <div className="relative">
       <div
@@ -70,6 +137,7 @@ export default function Home({ category, accessToken }) {
                 onClick={categoryHandler}
                 className="shrink-0 px-3 border rounded-[19px] border-[#A7A7A7] mr-[11px] h-8 text-center text-[14px] text-graytypo "
                 key={ct.id}
+                value={ct.title}
               >
                 {ct.title}
               </button>
@@ -82,10 +150,16 @@ export default function Home({ category, accessToken }) {
         <button className="py-4 font-medium text-graytypo border-b-[2px] border-VsGreen">
           최신 투표
         </button>
-        <button className="py-4 font-medium text-graytypo">
+        <button
+          onClick={voteUserParticipateHandler}
+          className="py-4 font-medium text-graytypo"
+        >
           내가 참여한 투표
         </button>
-        <button className="py-4 font-medium text-graytypo">
+        <button
+          onClick={voteUserPostHandler}
+          className="py-4 font-medium text-graytypo"
+        >
           내가 만든 투표
         </button>
       </div>
