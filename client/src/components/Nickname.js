@@ -24,7 +24,7 @@ export default function Nickname() {
   return (
     <div>
       <div className="flex py-[17px] pl-2">
-        <img className="mr-2" src="/images/back.svg" alt="" />
+        <img className="mr-2" src="/images/go-back-arrow.svg" alt="" />
         <img src="/images/vslogo.svg" alt="" />
       </div>
       <div className="h-2 w-full bg-[#f2f2f2]"></div>
