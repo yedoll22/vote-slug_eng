@@ -19,6 +19,24 @@ export default function Login() {
   // 유효성 검사
   const [isEmail, setIsEmail] = useState(false);
 
+  const emailInputClass = () => {
+    if (isEmail && userInfo.email.length)
+      return "w-full h-[48px] rounded-[8px] border border-VsGreen pl-4 text-sm font-normal focus:outline-VsGreen";
+    else if (!isEmail && userInfo.email.length)
+      return "w-full h-[48px] rounded-[8px] border border-VsRed pl-4 text-sm font-normal focus:outline-VsGreen";
+    else if (!isEmail && !userInfo.email.length)
+      return "w-full h-[48px] rounded-[8px] border border-[#D3D3D3] pl-4 text-sm font-normal focus:outline-VsGreen";
+    else
+      return "w-full h-[48px] rounded-[8px] border border-[#D3D3D3] pl-4 text-sm font-normal focus:outline-VsGreen";
+  };
+
+  const passwordInputClass = () => {
+    if (loginErrorMessage === "비밀번호가 틀렸습니다.")
+      return "w-full h-[48px] rounded-[8px] border border-VsRed pl-4 text-sm font-normal focus:outline-VsGreen";
+    else
+      return "w-full h-[48px] rounded-[8px] border border-[#d3d3d3] pl-4 text-sm font-normal focus:outline-VsGreen";
+  };
+
   const emailHandler = (e) => {
     const emailRegex =
       /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
@@ -33,6 +51,7 @@ export default function Login() {
   };
 
   const passwordHandler = (e) => {
+    setLoginErrorMessage("");
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
   };
 
@@ -67,38 +86,82 @@ export default function Login() {
 
   return (
     <div className="pt-10 pb-[17px]">
-      <div className="w-full h-[120px] bg-[#8BCDFE] mb-10"></div>
+      {/* <div className="w-full h-[120px] bg-[#8BCDFE] mb-10"></div> */}
+      <div className="px-12 py-8 mb-10">
+        <img className="w-full" src="/images/vslogo.svg" alt="voteslug-logo" />
+      </div>
       <div className="px-5 mb-4">
         <div className="flex flex-col pb-[18px] mb-2">
           <span className="pl-4 mb-2 text-base font-medium">이메일</span>
-          <input
-            onChange={emailHandler}
-            value={userInfo.email}
-            name="email"
-            type="text"
-            className="w-full h-[48px] rounded-[8px] border border-[#d3d3d3] pl-4 text-sm font-normal"
-            placeholder="이메일을 입력하세요."
-          ></input>
-          {userInfo.email.length > 0 && (
-            <span
-              className={
-                isEmail ? "text-sm text-indigo-500" : "text-sm text-red-400"
-              }
-            >
-              {emailMessage}
-            </span>
-          )}
+          <div className="relative">
+            <input
+              autoComplete="off"
+              onChange={emailHandler}
+              value={userInfo.email}
+              name="email"
+              type="text"
+              className={emailInputClass()}
+              placeholder="이메일을 입력하세요."
+            ></input>
+            {userInfo.email.length > 0 ? (
+              <img
+                onClick={() => {
+                  setUserInfo({ ...userInfo, email: "" });
+                  setLoginErrorMessage("");
+                }}
+                className="cursor-pointer absolute right-3 top-3.5 z-10"
+                src="/images/delete.svg"
+                alt=""
+              />
+            ) : null}
+            {loginErrorMessage ===
+            "존재하지 않는 이메일입니다." ? null : userInfo.email.length ? (
+              <span
+                className={
+                  isEmail
+                    ? "pl-2 text-sm text-VsGreen"
+                    : "pl-2 text-sm text-VsRed"
+                }
+              >
+                {emailMessage}
+              </span>
+            ) : null}
+            {loginErrorMessage === "존재하지 않는 이메일입니다." ? (
+              <div className="pt-1 pl-2 text-sm text-VsRed">
+                {loginErrorMessage}
+              </div>
+            ) : null}
+          </div>
         </div>
         <div className="flex flex-col pb-[18px] mb-4">
           <span className="pl-4 mb-2 text-base font-medium">비밀번호</span>
-          <input
-            onChange={passwordHandler}
-            value={userInfo.password}
-            name="password"
-            type="password"
-            className="w-full h-[48px] rounded-[8px] border border-[#d3d3d3] pl-4 text-sm font-normal"
-            placeholder="비밀번호를　입력하세요."
-          ></input>
+          <div className="flex relative">
+            <input
+              autoComplete="off"
+              onChange={passwordHandler}
+              value={userInfo.password}
+              name="password"
+              type="password"
+              className={passwordInputClass()}
+              placeholder="비밀번호를　입력하세요."
+            ></input>
+            {userInfo.password.length > 0 ? (
+              <img
+                onClick={() => {
+                  setUserInfo({ ...userInfo, password: "" });
+                  setLoginErrorMessage("");
+                }}
+                className="cursor-pointer absolute right-3 top-3.5 z-10"
+                src="/images/delete.svg"
+                alt=""
+              />
+            ) : null}
+          </div>
+          {loginErrorMessage === "비밀번호가 틀렸습니다." ? (
+            <div className="pt-2 pl-2 text-sm text-VsRed">
+              {loginErrorMessage}
+            </div>
+          ) : null}
         </div>
 
         <button
@@ -107,7 +170,6 @@ export default function Login() {
         >
           로그인
         </button>
-        <div className="text-sm text-red-400">{loginErrorMessage}</div>
       </div>
       <div className="flex justify-center py-[11px] mb-[58px]">
         <button className="text-sm text-[#7A7A7A] font-medium">

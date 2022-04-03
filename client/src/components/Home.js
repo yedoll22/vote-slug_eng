@@ -11,26 +11,27 @@ export default function Home({ category }) {
   const isLogin = useSelector((state) => state.isLogin.value);
   const [voteInfo, setVoteInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [voteFilter, setVoteFilter] = useState("latest");
+  const [categoryFilter, setCategoryFilter] = useState("전체");
+
+  const voteFilterClass = (filter) => {
+    if (voteFilter === filter)
+      return "cursor-pointer py-4 font-medium text-[#222222] border-b-[2px] border-VsGreen";
+    return "py-4 font-medium text-graytypo cursor-pointer";
+  };
+
+  const categoryFilterClass = (filter) => {
+    if (categoryFilter === filter)
+      return "shrink-0 px-3 rounded-[19px] mr-[11px] bg-VSYellow h-8 text-center text-[14px] text-black";
+    return "shrink-0 px-3 border rounded-[19px] border-[#A7A7A7] mr-[11px] h-8 text-center text-[14px] text-graytypo";
+  };
 
   const history = useHistory();
 
-  const categoryHandler = async (e) => {
-    const queryString = encodeURIComponent(e.target.value);
+  const categoryHandler = async (id) => {
     await axios
-      .get(
-        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`,
-        {
-          params: { category: queryString },
-        },
-        {
-          header: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
-      .then((res) => {
-        setVoteInfo(res.data);
-      })
+      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${id}`)
+      .then((res) => setVoteInfo(res.data))
       .catch((err) => {
         if (err.response.status === 403 || err.response.status === 404) {
           history.push("/login");
@@ -57,6 +58,7 @@ export default function Home({ category }) {
     voteListHandler();
   }, []);
   const voteUserPostHandler = async () => {
+    setVoteFilter("posted");
     await axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
         params: { type: "posted" },
@@ -79,6 +81,7 @@ export default function Home({ category }) {
   };
 
   const voteUserParticipateHandler = async () => {
+    setVoteFilter("participated");
     await axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
         params: { type: "participated" },
@@ -103,59 +106,73 @@ export default function Home({ category }) {
   };
   return (
     <div className="relative">
+      <div className="sticky top-0 bg-white z-50">
+        <div className="bg-white z-50 flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
+          <img src="images/vslogo.svg" alt="voteslug-logo"></img>
+          <img
+            onClick={() => {
+              if (isLogin) history.push("/mypage");
+              else setShowModal(true);
+            }}
+            src="images/mypage.svg"
+            alt="mypage"
+          ></img>
+        </div>
+        <div className="sticky  pl-5 pr-[14px] py-2">
+          <div className="font-normal text-[14px] text-black mb-2">
+            카테고리를 선택하세요
+          </div>
+          <div className="flex flex-nowrap overflow-x-auto no-scrollbar">
+            {category.map((ct) => {
+              return (
+                <button
+                  onClick={() => {
+                    setCategoryFilter(ct.title);
+                    categoryHandler(ct.id);
+                  }}
+                  className={categoryFilterClass(ct.title)}
+                  key={ct.id}
+                  value={ct.title}
+                >
+                  {ct.title}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="h-2 w-full bg-[#f2f2f2]"></div>
+        <div className="grid grid-cols-3">
+          <button
+            onClick={() => setVoteFilter("latest")}
+            className={voteFilterClass("latest")}
+          >
+            최신 투표
+          </button>
+          <button
+            onClick={voteUserParticipateHandler}
+            className={voteFilterClass("participated")}
+          >
+            내가 참여한 투표
+          </button>
+          <button
+            onClick={voteUserPostHandler}
+            className={voteFilterClass("posted")}
+          >
+            내가 만든 투표
+          </button>
+        </div>
+      </div>
+
       <div
         onClick={() => history.push("/votepost")}
-        className="fixed top-[800px] right-0 z-50 cursor-pointer"
+        className="sticky z-50 top-[92%] ml-[84%] h-0 cursor-pointer"
       >
-        <img src="images/votePost.svg"></img>
-      </div>
-      <div className="flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
-        <img src="images/vslogo.svg"></img>
-        <img
-          onClick={() => {
-            if (isLogin) history.push("/mypage");
-            else setShowModal(true);
-          }}
-          src="images/mypage.svg"
-        ></img>
-      </div>
-      <div className="pl-5 pr-[14px] py-2">
-        <div className="font-normal text-[14px] text-black mb-2">
-          카테고리를 선택하세요
-        </div>
-        <div className="flex flex-nowrap overflow-x-auto no-scrollbar">
-          {category.map((ct) => {
-            return (
-              <button
-                onClick={categoryHandler}
-                className="shrink-0 px-3 border rounded-[19px] border-[#A7A7A7] mr-[11px] h-8 text-center text-[14px] text-graytypo "
-                key={ct.id}
-                value={ct.title}
-              >
-                {ct.title}
-              </button>
-            );
-          })}
+        <div className="shadow-3xl bg-VsGreen w-[50px] h-[50px] rounded-full flex items-center justify-center">
+          <img className="w-8 h-8" src="images/add-icon.png" alt="" />
         </div>
       </div>
-      <div className="h-2 w-full bg-[#f2f2f2]"></div>
-      <div className="grid grid-cols-3">
-        <button className="py-4 font-medium text-graytypo border-b-[2px] border-VsGreen">
-          최신 투표
-        </button>
-        <button
-          onClick={voteUserParticipateHandler}
-          className="py-4 font-medium text-graytypo"
-        >
-          내가 참여한 투표
-        </button>
-        <button
-          onClick={voteUserPostHandler}
-          className="py-4 font-medium text-graytypo"
-        >
-          내가 만든 투표
-        </button>
-      </div>
+
       <div className="pt-10 px-5 pb-10">
         {voteInfo.map((vote) => (
           <div
@@ -188,6 +205,7 @@ export default function Home({ category }) {
           </div>
         ))}
       </div>
+
       {showModal && <LoginModal setShowModal={setShowModal} />}
     </div>
   );
