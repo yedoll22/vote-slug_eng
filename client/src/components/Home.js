@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
+import LoginModal from "./LoginModal";
 
 axios.defaults.withCredentials = true;
 
 export default function Home({ category, accessToken }) {
   const [voteInfo, setVoteInfo] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [choice, setChoice] = useState(false);
+
   const history = useHistory();
 
   const categoryHandler = async (e) => {
@@ -26,11 +30,7 @@ export default function Home({ category, accessToken }) {
         setVoteInfo(res.data);
       })
       .catch((err) => {
-        if (
-          err.response.status === 401 ||
-          err.response.status === 403 ||
-          err.response.status === 404
-        ) {
+        if (err.response.status === 403 || err.response.status === 404) {
           history.push("/login");
         } else {
           console.log(err);
@@ -71,11 +71,9 @@ export default function Home({ category, accessToken }) {
         setVoteInfo(res.data);
       })
       .catch((err) => {
-        if (
-          err.response.status === 401 ||
-          err.response.status === 403 ||
-          err.response.status === 404
-        ) {
+        if (err.response.status === 401) {
+          setShowModal(true);
+        } else if (err.response.status === 403 || err.response.status === 404) {
           history.push("/login");
         } else {
           console.log(err);
@@ -195,6 +193,7 @@ export default function Home({ category, accessToken }) {
           </div>
         ))}
       </div>
+      {showModal && <LoginModal setShowModal={setShowModal} />}
     </div>
   );
 }
