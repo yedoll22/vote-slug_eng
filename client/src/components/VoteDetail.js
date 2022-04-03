@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 export default function VoteDetail() {
   const [data, setData] = useState({});
+  const history = useHistory();
+
   const { voteId } = useParams();
 
   useEffect(() => {
@@ -23,7 +25,13 @@ export default function VoteDetail() {
   return (
     <div>
       <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
-        <img src="/images/go-back-arrow.svg" className="mr-2"></img>
+        <img
+          onClick={() => {
+            history.goBack();
+          }}
+          src="/images/go-back-arrow.svg"
+          className="mr-2 cursor-pointer"
+        ></img>
         <img src="/images/vslogo.svg"></img>
       </div>
       <div className="pt-6">
