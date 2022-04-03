@@ -23,7 +23,7 @@ export default function VoteDetail() {
   return (
     <div>
       <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
-        <img src="/images/backArrow.svg" className="mr-2"></img>
+        <img src="/images/go-back-arrow.svg" className="mr-2"></img>
         <img src="/images/vslogo.svg"></img>
       </div>
       <div className="pt-6">
