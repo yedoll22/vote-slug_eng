@@ -1,8 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getAccessToken } from "../slice/accessTokenSlice";
+import { loginHandler } from "../slice/isLoginSlice";
 
-export default function Login({ loginHandler, getAccessToken }) {
+export default function Login() {
+  const dispatch = useDispatch();
   // 이메일, 비밀번호 확인
   const history = useHistory();
   const [userInfo, setUserInfo] = useState({
@@ -44,8 +48,10 @@ export default function Login({ loginHandler, getAccessToken }) {
         }
       )
       .then((res) => {
-        loginHandler();
-        getAccessToken(res.data.accessToken);
+        dispatch(loginHandler());
+        console.log(res.data.accessToken);
+        dispatch(getAccessToken(res.data.accessToken));
+        // getAccessToken(res.data.accessToken);
         history.push("/");
       })
       .catch((err) => {

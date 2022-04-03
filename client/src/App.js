@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Home from "./components/Home";
 import VotePost from "./components/VotePost";
@@ -8,7 +8,7 @@ import SignUp from "./components/SignUp";
 import Mypage from "./components/Mypage";
 import Nickname from "./components/Nickname";
 import Password from "./components/Password";
-import axios from "axios";
+import { useSelector } from "react-redux";
 
 function App() {
   const category = [
@@ -37,40 +37,12 @@ function App() {
       id: "6",
     },
   ];
-  const dummyData = [
-    {
-      id: 1,
-      voteTite: "코로나 끝나면 당장 어디로",
-      voteOption1: "푸켓",
-      voteOption2: "런던",
-      voteOption1Count: 131,
-      voteOption2Count: 100,
-      nickname: "peter",
-      category: "여행",
-      createdAt: 2000,
-    },
-    {
-      id: 2,
-      voteTite: "오늘 점심?",
-      voteOption1: "샌드위치",
-      voteOption2: "쌀국수",
-      voteOption1Count: 131,
-      voteOption2Count: 100,
-      nickname: "wanda",
-      category: "일상",
-      createdAt: 2002,
-    },
-  ];
 
-  const [isLogin, setIsLogin] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+  const isLogin = useSelector((state) => state.isLogin.value);
 
   const accessTokenHandler = (token) => {
     setAccessToken(token);
-  };
-
-  const loginHandler = () => {
-    setIsLogin(true);
   };
 
   return (
@@ -80,11 +52,7 @@ function App() {
           {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
         </Route>
         <Route path="/home">
-          <Home
-            category={category}
-            dummyData={dummyData}
-            accessToken={accessToken}
-          />
+          <Home category={category} accessToken={accessToken} />
         </Route>
         <Route path="/vote/:voteId">
           <VoteDetail />
@@ -93,10 +61,7 @@ function App() {
           <VotePost accessToken={accessToken} />
         </Route>
         <Route path="/login">
-          <Login
-            getAccessToken={accessTokenHandler}
-            loginHandler={loginHandler}
-          />
+          <Login getAccessToken={accessTokenHandler} />
         </Route>
         <Route path="/signup">
           <SignUp />
