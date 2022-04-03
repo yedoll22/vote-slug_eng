@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import LoginModal from "./LoginModal";
+import { useSelector } from "react-redux";
 
 axios.defaults.withCredentials = true;
 
-export default function Home({ category, accessToken }) {
+export default function Home({ category }) {
+  const accessToken = useSelector((state) => state.accessToken.value);
+  const isLogin = useSelector((state) => state.isLogin.value);
   const [voteInfo, setVoteInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [choice, setChoice] = useState(false);
 
   const history = useHistory();
 
@@ -56,19 +58,14 @@ export default function Home({ category, accessToken }) {
   }, []);
   const voteUserPostHandler = async () => {
     await axios
-      .get(
-        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`,
-        {
-          params: { type: "posted" },
+      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+        params: { type: "posted" },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          header: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+      })
       .then((res) => {
-        setVoteInfo(res.data);
+        setVoteInfo(res.data.createdVoteList);
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -83,17 +80,12 @@ export default function Home({ category, accessToken }) {
 
   const voteUserParticipateHandler = async () => {
     await axios
-      .get(
-        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`,
-        {
-          params: { type: "participated" },
+      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+        params: { type: "participated" },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          header: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+      })
       .then((res) => {
         setVoteInfo(res.data);
       })
@@ -120,7 +112,10 @@ export default function Home({ category, accessToken }) {
       <div className="flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
         <img src="images/vslogo.svg"></img>
         <img
-          onClick={() => history.push("/mypage")}
+          onClick={() => {
+            if (isLogin) history.push("/mypage");
+            else setShowModal(true);
+          }}
           src="images/mypage.svg"
         ></img>
       </div>
