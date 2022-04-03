@@ -1,41 +1,55 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
-export default function Mypage(props) {
+export default function Mypage() {
   const history = useHistory();
   const [userInfo, setUserInfo] = useState({});
-  // useEffect(() => {
-  //   getUserInfo();
-  // }, []);
+  useEffect(() => {
+    getUserInfo();
+  }, []);
 
   const getUserInfo = async () => {
     await axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/mypage`, {
         headers: {
-          Authorization: `Bearer ${props.accessToken}`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ4OTgxMTkwLCJleHAiOjE2NDkwNjc1OTB9.TNGmw6ftZS1dicc3r6c53HHMiWFRNvl5fM3l43Q521o`,
           "Content-Type": "application/json",
         },
         withCredentials: true,
       })
       .then((res) => {
         if (res.status === 200) {
-          const { userid, email, nickname, gender, dob, createAt } = res.data;
-          setUserInfo({ userid, email, nickname, gender, dob, createAt });
-        } else if (res.status === 500) {
-          //500일경우서버네트워크문제라고알려주기
+          const { email, nickname, gender, dob } = res.data;
+          setUserInfo({ email, nickname, gender, dob });
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 500) {
+          //서버오류 페이지 만들어서 거기로 유저 이동
         } else {
-          //로그인이필요한페이지입니다모달창
+          //로그인이 필요한 페이지입니다．
           history.push("/login");
         }
       });
   };
 
+  // const logoutUser = async () => {
+  //   await axios
+  //     .post(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/logout`, {
+  //       headers: {
+  //         // Authorization: `Bearer ${props.accessToken}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
+  //     .then((res) => {});
+  // };
+
   const deleteUserInfo = async () => {
     await axios
       .delete(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user`, {
         headers: {
-          Authorization: `Bearer ${props.accessToken}`,
+          // Authorization: `Bearer ${props.accessToken}`,
           "Content-Type": "application/json",
         },
         withCredentials: true,
@@ -56,17 +70,19 @@ export default function Mypage(props) {
     <>
       <div className="flex py-[19px] px-5">
         <img
-          onClick={() => {}}
+          onClick={() => {
+            history.goBack();
+          }}
           className="mr-2 cursor-pointer"
           src="images/go-back-arrow.svg"
           alt=""
         />
-        <img src="images/vslogo.svg"></img>
+        <img src="images/vslogo.svg" alt=""></img>
       </div>
       <div className="h-2 w-full bg-[#F2F2F2]"></div>
       <div className="pt-6">
         <div className="px-5 flex justify-between items-center mb-2">
-          <div className="text-[20px] font-medium">user.nickname</div>
+          <div className="text-[20px] font-medium">{userInfo.nickname}</div>
           <div className="text-[14px] font-medium text-graytypo">로그아웃</div>
         </div>
 
@@ -83,7 +99,7 @@ export default function Mypage(props) {
             <div className="text-graytypo font-normal text-sm mr-[29px]">
               이메일
             </div>
-            <div>user.email</div>
+            <div>{userInfo.email}</div>
           </div>
 
           <div className="flex items-center mb-4 justify-between">
@@ -91,10 +107,15 @@ export default function Mypage(props) {
               <div className="text-graytypo font-normal text-sm mr-[29px]">
                 닉네임
               </div>
-              <div>user.nickname</div>
+              <div>{userInfo.nickname}</div>
             </div>
 
-            <div onClick={() => {}} className="flex cursor-pointer">
+            <div
+              onClick={() => {
+                history.push(`/nickname?nickname=${userInfo.nickname}`);
+              }}
+              className="flex cursor-pointer"
+            >
               <div className="mr-3 text-VsGreen font-normal text-sm">
                 닉네임 변경
               </div>
@@ -110,7 +131,12 @@ export default function Mypage(props) {
               <div>******</div>
             </div>
 
-            <div onClick={() => {}} className="flex cursor-pointer">
+            <div
+              onClick={() => {
+                history.push("/password");
+              }}
+              className="flex cursor-pointer"
+            >
               <div className="mr-3 text-VsGreen font-normal text-sm">
                 비밀번호 변경
               </div>
@@ -122,14 +148,14 @@ export default function Mypage(props) {
             <div className="text-graytypo font-normal text-sm mr-[16px]">
               성별<span className="text-transparent">공백</span>
             </div>
-            <div>user.gender</div>
+            <div>{userInfo.gender}</div>
           </div>
 
           <div className="flex items-center mb-4">
             <div className="text-graytypo font-normal text-sm mr-4">
               생년월일
             </div>
-            <div>user.dob</div>
+            <div>{userInfo.dob}</div>
           </div>
         </div>
 
