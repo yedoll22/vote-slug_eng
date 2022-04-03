@@ -12,38 +12,16 @@ import { useSelector } from "react-redux";
 
 function App() {
   const category = [
-    {
-      title: "연애",
-      id: "1",
-    },
-    {
-      title: "음식",
-      id: "2",
-    },
-    {
-      title: "여행",
-      id: "3",
-    },
-    {
-      title: "일상",
-      id: "4",
-    },
-    {
-      title: "패션",
-      id: "5",
-    },
-    {
-      title: "etc",
-      id: "6",
-    },
+    { title: "전체", id: "1" },
+    { title: "연애", id: "2" },
+    { title: "음식", id: "3" },
+    { title: "여행", id: "4" },
+    { title: "일상", id: "5" },
+    { title: "패션", id: "6" },
+    { title: "etc", id: "7" },
   ];
 
-  const [accessToken, setAccessToken] = useState("");
   const isLogin = useSelector((state) => state.isLogin.value);
-
-  const accessTokenHandler = (token) => {
-    setAccessToken(token);
-  };
 
   return (
     <BrowserRouter>
@@ -52,16 +30,16 @@ function App() {
           {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
         </Route>
         <Route path="/home">
-          <Home category={category} accessToken={accessToken} />
+          <Home category={category} />
         </Route>
         <Route path="/vote/:voteId">
           <VoteDetail />
         </Route>
         <Route path="/votepost">
-          <VotePost accessToken={accessToken} />
+          <VotePost />
         </Route>
         <Route path="/login">
-          <Login getAccessToken={accessTokenHandler} />
+          <Login />
         </Route>
         <Route path="/signup">
           <SignUp />
