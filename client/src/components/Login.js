@@ -68,9 +68,7 @@ export default function Login() {
       )
       .then((res) => {
         dispatch(loginHandler());
-        console.log(res.data.accessToken);
         dispatch(getAccessToken(res.data.accessToken));
-        // getAccessToken(res.data.accessToken);
         history.push("/");
       })
       .catch((err) => {
@@ -172,7 +170,12 @@ export default function Login() {
         </button>
       </div>
       <div className="flex justify-center py-[11px] mb-[58px]">
-        <button className="text-sm text-[#7A7A7A] font-medium">
+        <button
+          onClick={() => {
+            history.push("/home");
+          }}
+          className="text-sm text-[#7A7A7A] font-medium"
+        >
           로그인 없이 둘러보기
         </button>
       </div>
@@ -180,7 +183,14 @@ export default function Login() {
         <span className="text-[#7a7a7a] font-normal text-sm">
           보트슬러그 계정이 없으신가요？
         </span>
-        <button className="text-[#7CE0AE] font-medium text-sm">가입하기</button>
+        <button
+          onClick={() => {
+            history.push("/signup");
+          }}
+          className="text-[#7CE0AE] font-medium text-sm"
+        >
+          가입하기
+        </button>
       </div>
     </div>
   );

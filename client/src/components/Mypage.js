@@ -1,10 +1,15 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-
+import { useSelector, useDispatch } from "react-redux";
+import SecessionModal from "./SecessionModal";
+import { removeAccessToken } from "../slice/accessTokenSlice";
 export default function Mypage() {
   const history = useHistory();
+  const accessToken = useSelector((state) => state.accessToken.value);
+  const dispatch = useDispatch();
   const [userInfo, setUserInfo] = useState({});
+  const [showModal, setShowModal] = useState(false);
   useEffect(() => {
     getUserInfo();
   }, []);
@@ -13,7 +18,7 @@ export default function Mypage() {
     await axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/mypage`, {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ4OTgxMTkwLCJleHAiOjE2NDkwNjc1OTB9.TNGmw6ftZS1dicc3r6c53HHMiWFRNvl5fM3l43Q521o`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         withCredentials: true,
@@ -28,28 +33,30 @@ export default function Mypage() {
         if (err.response.status === 500) {
           //서버오류 페이지 만들어서 거기로 유저 이동
         } else {
-          //로그인이 필요한 페이지입니다．
           history.push("/login");
         }
       });
   };
 
-  // const logoutUser = async () => {
-  //   await axios
-  //     .post(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/logout`, {
-  //       headers: {
-  //         // Authorization: `Bearer ${props.accessToken}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     })
-  //     .then((res) => {});
-  // };
+  const logoutUser = async () => {
+    await axios
+      .post(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/logout`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        dispatch(removeAccessToken());
+        history.push("/login");
+      });
+  };
 
   const deleteUserInfo = async () => {
     await axios
       .delete(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user`, {
         headers: {
-          // Authorization: `Bearer ${props.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         withCredentials: true,
@@ -60,7 +67,6 @@ export default function Mypage() {
         } else if (res.status === 500) {
           // 500일경우서버네트워크문제라고알려주기
         } else {
-          // 로그인이필요한페이지입니다모달창
           history.push("/login");
         }
       });
@@ -83,7 +89,12 @@ export default function Mypage() {
       <div className="pt-6">
         <div className="px-5 flex justify-between items-center mb-2">
           <div className="text-[20px] font-medium">{userInfo.nickname}</div>
-          <div className="text-[14px] font-medium text-graytypo">로그아웃</div>
+          <div
+            onClick={logoutUser}
+            className="cursor-pointer text-[14px] font-medium text-graytypo"
+          >
+            로그아웃
+          </div>
         </div>
 
         <div className="flex px-5 text-graytypo text-[14px] font-normal mb-[39px]">
@@ -160,12 +171,20 @@ export default function Mypage() {
         </div>
 
         <div
-          onClick={() => {}}
+          onClick={() => {
+            setShowModal(true);
+          }}
           className="text-center text-graytypo font-normal cursor-pointer hover:text-VsRed"
         >
           보트 슬러그 탈퇴를 원하시나요?
         </div>
       </div>
+      {showModal && (
+        <SecessionModal
+          setShowModal={setShowModal}
+          deleteUserInfo={deleteUserInfo}
+        />
+      )}
     </>
   );
 }
