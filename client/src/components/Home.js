@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import LoginModal from "./LoginModal";
+import LoginNeedModal from "./LoginNeedModal";
 import { useSelector } from "react-redux";
 
 axios.defaults.withCredentials = true;
@@ -28,19 +28,6 @@ export default function Home({ category }) {
 
   const history = useHistory();
 
-  const categoryHandler = async (id) => {
-    await axios
-      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${id}`)
-      .then((res) => setVoteInfo(res.data))
-      .catch((err) => {
-        if (err.response.status === 403 || err.response.status === 404) {
-          history.push("/login");
-        } else {
-          console.log(err);
-        }
-      });
-  };
-
   const voteListHandler = () => {
     axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`, {
@@ -57,6 +44,20 @@ export default function Home({ category }) {
   useEffect(() => {
     voteListHandler();
   }, []);
+
+  const categoryHandler = async (id) => {
+    await axios
+      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${id}`)
+      .then((res) => setVoteInfo(res.data))
+      .catch((err) => {
+        if (err.response.status === 403 || err.response.status === 404) {
+          history.push("/login");
+        } else {
+          console.log(err);
+        }
+      });
+  };
+
   const voteUserPostHandler = async () => {
     setVoteFilter("posted");
     await axios
@@ -70,9 +71,9 @@ export default function Home({ category }) {
         setVoteInfo(res.data.createdVoteList);
       })
       .catch((err) => {
-        if (err.response.status === 401) {
+        if (err.response.status === 403 || err.response.status === 404) {
           setShowModal(true);
-        } else if (err.response.status === 403 || err.response.status === 404) {
+        } else if (err.response.status === 401) {
           history.push("/login");
         } else {
           console.log(err);
@@ -93,11 +94,9 @@ export default function Home({ category }) {
         setVoteInfo(res.data);
       })
       .catch((err) => {
-        if (
-          err.response.status === 401 ||
-          err.response.status === 403 ||
-          err.response.status === 404
-        ) {
+        if (err.response.status === 403 || err.response.status === 404) {
+          setShowModal(true);
+        } else if (err.response.status === 401) {
           history.push("/login");
         } else {
           console.log(err);
@@ -165,7 +164,10 @@ export default function Home({ category }) {
       </div>
 
       <div
-        onClick={() => history.push("/votepost")}
+        onClick={() => {
+          if (isLogin) history.push("/votepost");
+          else setShowModal(true);
+        }}
         className="sticky z-50 top-[92%] ml-[84%] h-0 cursor-pointer"
       >
         <div className="shadow-3xl bg-VsGreen w-[50px] h-[50px] rounded-full flex items-center justify-center">
@@ -206,7 +208,7 @@ export default function Home({ category }) {
         ))}
       </div>
 
-      {showModal && <LoginModal setShowModal={setShowModal} />}
+      {showModal && <LoginNeedModal setShowModal={setShowModal} />}
     </div>
   );
 }

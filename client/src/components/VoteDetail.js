@@ -1,9 +1,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
+import VotePostModal from "./VotePostModal";
+
+axios.defaults.withCredentials = true;
 
 export default function VoteDetail() {
-  const [data, setData] = useState({});
+  const [voteData, setVoteData] = useState({});
+  const [postData, setPostData] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [option1dPercent, setOption1Percent] = useState(null);
+  const [option2dPercent, setOption2Percent] = useState(null);
+
   const history = useHistory();
 
   const { voteId } = useParams();
@@ -12,16 +20,54 @@ export default function VoteDetail() {
     axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/${voteId}`)
       .then((result) => {
-        setData(result.data);
+        setVoteData(result.data);
+        setOption1Percent(
+          Math.ceil(
+            (100 * result.data.voteOption1Count) /
+              (result.data.voteOption1Count + result.data.voteOption2Count)
+          )
+        );
+        setOption2Percent(
+          Math.floor(
+            (100 * result.data.voteOption2Count) /
+              (result.data.voteOption1Count + result.data.voteOption2Count)
+          )
+        );
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
 
-  console.log("title", data.voteTitle);
-  console.log("op2", data.voteOption2Count);
+  const postDataHandler = (key) => () => {
+    setPostData({ voteId: voteId, [key]: true });
+    setShowModal(true);
+  };
+  const voteParticipateHandler = async () => {
+    await axios
+      .patch(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`, postData, {
+        headers: {
+          Authorization: {},
+          "Content-Type": "application/json",
+        },
+      })
+      .then((result) => {
+        setVoteData(result.data);
+      })
+      .catch((err) => {
+        if (
+          err.response.status === 401 ||
+          err.response.status === 403 ||
+          err.response.status === 404
+        ) {
+          history.push("/login");
+        } else {
+          console.log(err);
+        }
+      });
+  };
 
+  console.log(postData);
   return (
     <div>
       <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
@@ -31,8 +77,9 @@ export default function VoteDetail() {
           }}
           src="/images/go-back-arrow.svg"
           className="mr-2 cursor-pointer"
+          alt="gobackarrow"
         ></img>
-        <img src="/images/vslogo.svg"></img>
+        <img src="/images/vslogo.svg" alt="vslogo"></img>
       </div>
       <div className="pt-6">
         <div className="pl-5 text-xl font-medium text-[#222222]">
@@ -42,38 +89,45 @@ export default function VoteDetail() {
           <div className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent">
             <div className="flex justify-between mb-4">
               <div className="text-graytypo text-[14px] font-normal">
-                {data.Category?.categoryTitle}
+                {voteData.Category?.categoryTitle}
               </div>
 
-              {data.voteOption1Count && (
+              {voteData.voteOption1Count && (
                 <div className="text-graytypo text-[14px] font-normal">
-                  {data?.voteOption1Count + data?.voteOption2Count}
+                  {voteData?.voteOption1Count + voteData?.voteOption2Count}
                 </div>
               )}
             </div>
 
             <div className="text-base font-normal text-black mb-4">
-              {data.voteTitle}
+              {voteData.voteTitle}
             </div>
 
             <div className="flex justify-center z-20">
-              <div className="bg-[#7CE0AE] break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4">
+              <button
+                value={"voteOption1"}
+                onClick={postDataHandler("voteOption1")}
+                className="hover:bg-[#7CE0AE] break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer"
+              >
                 <div className="flex flex-col items-center justify-center">
-                  <div className="mb-2">{data.voteOption1}</div>
-                  <div>80%</div>
+                  <div className="mb-2">{voteData.voteOption1}</div>
+                  <div>{option1dPercent}%</div>
                 </div>
 
                 <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
                   VS
                 </div>
-              </div>
-
-              <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] z-0">
+              </button>
+              <button
+                value={"voteOption2"}
+                onClick={postDataHandler("voteOption2")}
+                className="hover:bg-[#7CE0AE] break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] z-0"
+              >
                 <div className="flex flex-col items-center justify-center">
-                  <div className="mb-2">{data.voteOption2}</div>
-                  <div>20%</div>
+                  <div className="mb-2">{voteData.voteOption2}</div>
+                  <div>{option2dPercent}%</div>
                 </div>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -81,6 +135,12 @@ export default function VoteDetail() {
           항목 눌러서 투표에 참여
         </div>
       </div>
+      {showModal && (
+        <VotePostModal
+          setShowModal={setShowModal}
+          voteParticipateHandler={voteParticipateHandler}
+        />
+      )}
     </div>
   );
 }

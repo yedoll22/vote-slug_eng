@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 axios.defaults.withCredentials = true;
 
-export default function VotePost({ accessToken }) {
+export default function VotePost() {
+  const accessToken = useSelector((state) => state.accessToken.value);
   const [votePostinfo, setVotePostinfo] = useState({
     voteTitle: "",
     category: "",
@@ -28,12 +30,9 @@ export default function VotePost({ accessToken }) {
           voteOption2: votePostinfo.voteOption2,
         },
         {
-          header: {
+          headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        },
-        {
-          "Content-Type": "application/json",
         }
       )
       .then((res) => {
@@ -54,10 +53,11 @@ export default function VotePost({ accessToken }) {
   return (
     <div>
       <div className="flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
-        <img src="images/vslogo.svg"></img>
+        <img src="images/vslogo.svg" alt="vslogo"></img>
         <img
           onClick={() => history.push("/mypage")}
           src="images/mypage.svg"
+          alt="mypage"
         ></img>
       </div>
       <div className="h-2 w-full bg-[#f2f2f2]"></div>
@@ -112,7 +112,7 @@ export default function VotePost({ accessToken }) {
               <img
                 className="absolute right-2 top-3 z-10"
                 src="images/dropdown.svg"
-                alt=""
+                alt="dropdown"
               />
             </div>
           </div>
