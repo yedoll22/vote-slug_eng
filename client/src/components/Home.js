@@ -68,6 +68,8 @@ export default function Home({ category }) {
         },
       })
       .then((res) => {
+        console.log(res.data);
+
         setVoteInfo(res.data.createdVoteList);
       })
       .catch((err) => {
@@ -91,7 +93,8 @@ export default function Home({ category }) {
         },
       })
       .then((res) => {
-        setVoteInfo(res.data);
+        console.log(res.data);
+        setVoteInfo(res.data.participatedVoteList);
       })
       .catch((err) => {
         if (err.response.status === 403 || err.response.status === 404) {
@@ -103,6 +106,7 @@ export default function Home({ category }) {
         }
       });
   };
+  console.log(voteInfo);
   return (
     <div className="relative">
       <div className="sticky top-0 bg-white z-50">
@@ -176,36 +180,38 @@ export default function Home({ category }) {
       </div>
 
       <div className="pt-10 px-5 pb-10">
-        {voteInfo.map((vote) => (
-          <div
-            onClick={() => history.push(`/vote/${vote.id}`)}
-            key={vote.id}
-            className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent overflow-x-auto mb-10 last:mb-0"
-          >
-            <div className="flex justify-between mb-4">
-              <div className="text-graytypo text-[14px] font-normal">
-                {vote.Category.categoryTitle}
-              </div>
-              <div className="text-graytypo text-[14px] font-normal">
-                {vote.voteOption1Count + vote.voteOption2Count}
-              </div>
-            </div>
-            <div className="text-base font-normal text-black mb-4">
-              {vote.voteTitle}
-            </div>
-            <div className="flex justify-center z-20">
-              <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4">
-                {vote.voteOption1}
-                <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
-                  VS
+        {voteInfo
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .map((vote) => (
+            <div
+              onClick={() => history.push(`/vote/${vote.id}`)}
+              key={vote.id}
+              className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent overflow-x-auto mb-10 last:mb-0"
+            >
+              <div className="flex justify-between mb-4">
+                <div className="text-graytypo text-[14px] font-normal">
+                  {vote.Category?.categoryTitle}
+                </div>
+                <div className="text-graytypo text-[14px] font-normal">
+                  {vote.voteOption1Count + vote.voteOption2Count}
                 </div>
               </div>
-              <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] z-0">
-                {vote.voteOption2}
+              <div className="text-base font-normal text-black mb-4">
+                {vote.voteTitle}
+              </div>
+              <div className="flex justify-center z-20">
+                <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4">
+                  {vote.voteOption1}
+                  <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
+                    VS
+                  </div>
+                </div>
+                <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] z-0">
+                  {vote.voteOption2}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {showModal && <LoginNeedModal setShowModal={setShowModal} />}

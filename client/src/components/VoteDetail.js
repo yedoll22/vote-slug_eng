@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import VotePostModal from "./VotePostModal";
-
+import { useSelector } from "react-redux";
 axios.defaults.withCredentials = true;
 
 export default function VoteDetail() {
@@ -13,8 +13,8 @@ export default function VoteDetail() {
   const [option2dPercent, setOption2Percent] = useState(null);
 
   const history = useHistory();
-
   const { voteId } = useParams();
+  const accessToken = useSelector((state) => state.accessToken.value);
 
   useEffect(() => {
     axios
@@ -47,7 +47,7 @@ export default function VoteDetail() {
     await axios
       .patch(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`, postData, {
         headers: {
-          Authorization: {},
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       })
