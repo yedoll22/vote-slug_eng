@@ -9,7 +9,7 @@ export default function VotePost() {
   const accessToken = useSelector((state) => state.accessToken.value);
   const [votePostinfo, setVotePostinfo] = useState({
     voteTitle: "",
-    category: "",
+    category: 0,
     voteOption1: "",
     voteOption2: "",
   });
@@ -18,14 +18,14 @@ export default function VotePost() {
   const votePostinputHandler = (key) => (e) => {
     setVotePostinfo({ ...votePostinfo, [key]: e.target.value });
   };
-
+  console.log(votePostinfo);
   const votePostHandler = async () => {
     await axios
       .post(
         `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`,
         {
           voteTitle: votePostinfo.voteTitle,
-          category: votePostinfo.category,
+          categoryId: votePostinfo.category,
           voteOption1: votePostinfo.voteOption1,
           voteOption2: votePostinfo.voteOption2,
         },
@@ -102,12 +102,12 @@ export default function VotePost() {
                 <option className="hidden" defaultValue>
                   카테고리를 선택하세요.
                 </option>
-                <option>연애</option>
-                <option>일상</option>
-                <option>여행</option>
-                <option>음식</option>
-                <option>패션</option>
-                <option>etc</option>
+                <option value={1}>전체</option>
+                <option value={2}>연애</option>
+                <option value={3}>음식</option>
+                <option value={4}>여행</option>
+                <option value={5}>패션</option>
+                <option value={5}>etc</option>
               </select>
               <img
                 className="absolute right-2 top-3 z-10"
