@@ -25,7 +25,7 @@ export default function Home({ category }) {
       return "shrink-0 px-3 rounded-[19px] mr-[11px] bg-VSYellow h-8 text-center text-[14px] text-black";
     return "shrink-0 px-3 border rounded-[19px] border-[#A7A7A7] mr-[11px] h-8 text-center text-[14px] text-graytypo";
   };
-
+  console.log(accessToken);
   const history = useHistory();
 
   const voteListHandler = () => {
@@ -93,7 +93,7 @@ export default function Home({ category }) {
         },
       })
       .then((res) => {
-        console.log(res.data);
+
         setVoteInfo(res.data.participatedVoteList);
       })
       .catch((err) => {
