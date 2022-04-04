@@ -9,6 +9,7 @@ import Mypage from "./components/Mypage";
 import Nickname from "./components/Nickname";
 import Password from "./components/Password";
 import { useSelector } from "react-redux";
+import Welcome from "./components/Welcome";
 
 function App() {
   const category = [
@@ -52,6 +53,9 @@ function App() {
         </Route>
         <Route path="/password">
           <Password />
+        </Route>
+        <Route path="/welcome">
+          <Welcome />
         </Route>
       </Switch>
     </BrowserRouter>
