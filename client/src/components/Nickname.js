@@ -1,8 +1,10 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function Nickname() {
+  const accessToken = useSelector((state) => state.accessToken.value);
   const history = useHistory();
   const location = useLocation();
   const originNickname = location.search.split("=")[1];
@@ -30,7 +32,7 @@ export default function Nickname() {
         },
         {
           headers: {
-            authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjQ4OTgxMTkwLCJleHAiOjE2NDkwNjc1OTB9.TNGmw6ftZS1dicc3r6c53HHMiWFRNvl5fM3l43Q521o`,
+            authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
           withCredentials: true,

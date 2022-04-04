@@ -16,6 +16,6 @@ export const accessTokenSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { getAccessToken } = accessTokenSlice.actions;
+export const { getAccessToken, removeAccessToken } = accessTokenSlice.actions;
 
 export default accessTokenSlice.reducer;

@@ -1,6 +1,6 @@
 import { useHistory } from "react-router-dom";
 
-const SecessionModal = ({ setShowModal }) => {
+const SecessionModal = ({ setShowModal, deleteUserInfo }) => {
   const history = useHistory();
   return (
     <>
@@ -24,7 +24,7 @@ const SecessionModal = ({ setShowModal }) => {
                 className="border-l py-[13px]border-l-[#C4C4C4] flex-1 h-full text-VsGreen font-bold text-sm"
                 type="button"
                 onClick={() => {
-                  //탈퇴 메소드 (props) 필요
+                  deleteUserInfo();
                   history.push("/login");
                 }}
               >
