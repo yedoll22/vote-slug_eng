@@ -91,9 +91,9 @@ module.exports = {
       const emailResult = await User.findOne({ where: { email } });
       const nicknameResult = await User.findOne({ where: { nickname } });
 
-      if (!emailResult)
+      if (emailResult)
         return res.status(409).json({ message: "email overlap" });
-      if (!nicknameResult)
+      if (nicknameResult)
         return res.status(409).json({ message: "nickname overlap" });
 
       // email과 nickname 중복 아닐 시 정상적으로 db에 user정보 Insert
