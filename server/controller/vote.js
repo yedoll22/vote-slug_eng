@@ -2,9 +2,9 @@ const { User, Vote, Category, User_vote } = require("../models");
 
 module.exports = {
   get: async (req, res) => {
-    const { categoryId } = Number(req.query);
+    const { categoryId } = req.query;
     try {
-      if (categoryId && categoryId !== 1) {
+      if (categoryId && categoryId !== "1") {
         const selectedVoteList = await Vote.findAll({
           where: { categoryId: categoryId },
           attributes: [
@@ -95,6 +95,7 @@ module.exports = {
       });
       return res.sendStatus(201);
     } catch (err) {
+      console.log(err);
       return res.sendStatus(500);
     }
   },
