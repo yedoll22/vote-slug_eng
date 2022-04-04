@@ -61,7 +61,7 @@ export default function SignUp() {
         }
       )
       .then((res) => {
-        history.push("/");
+        history.push("/welcome");
       })
       .catch((err) => {
         if (err.response.data.message === "email overlap") {
