@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTION"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 app.use(morgan("tiny"));
@@ -36,5 +36,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Voteslug listening on port ${port}`);
 });
