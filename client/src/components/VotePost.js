@@ -106,8 +106,9 @@ export default function VotePost() {
                 <option value={2}>연애</option>
                 <option value={3}>음식</option>
                 <option value={4}>여행</option>
-                <option value={5}>패션</option>
-                <option value={5}>etc</option>
+                <option value={5}>일상</option>
+                <option value={6}>패션</option>
+                <option value={7}>etc</option>
               </select>
               <img
                 className="absolute right-2 top-3 z-10"

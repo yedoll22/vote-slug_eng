@@ -13,100 +13,214 @@ export default function Home({ category }) {
   const [showModal, setShowModal] = useState(false);
   const [voteFilter, setVoteFilter] = useState("latest");
   const [categoryFilter, setCategoryFilter] = useState("전체");
+  const [categoryId, setCategoryId] = useState(1);
 
   const voteFilterClass = (filter) => {
     if (voteFilter === filter)
       return "cursor-pointer py-4 font-medium text-[#222222] border-b-[2px] border-VsGreen";
     return "py-4 font-medium text-graytypo cursor-pointer";
   };
-
   const categoryFilterClass = (filter) => {
     if (categoryFilter === filter)
       return "shrink-0 px-3 rounded-[19px] mr-[11px] bg-VSYellow h-8 text-center text-[14px] text-black";
     return "shrink-0 px-3 border rounded-[19px] border-[#A7A7A7] mr-[11px] h-8 text-center text-[14px] text-graytypo";
   };
-  console.log(accessToken);
+
   const history = useHistory();
 
-  const voteListHandler = () => {
-    axios
-      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((res) => {
-        setVoteInfo(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const voteListHandler = async () => {
+    // 투표목록을 불러와야함.
+
+    // CASE1 전체 리스트 불러오기 (categoryId: "1", voteFilter: "latest")
+    if (categoryId === 1 && voteFilter === "latest") {
+      await axios
+        .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((res) => setVoteInfo(res.data))
+        .catch(console.log);
+    }
+    // CASE2 카테고리만 필터했을 경우 (categoryId: "${id}", voteFilter: "latest")
+    else if (categoryId !== 1 && voteFilter === "latest") {
+      await axios
+        .get(
+          `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${categoryId}`,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+        .then((res) => setVoteInfo(res.data))
+        .catch(console.log);
+    }
+
+    // CASE3 내가 참여한 투표이면서 전체인 경우 (type: "participated") participatedVoteList
+    else if (categoryId === 1 && voteFilter === "participated") {
+      await axios
+        .get(
+          `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote?type=participated`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        )
+        .then((res) => setVoteInfo(res.data.result))
+        .catch(console.log);
+    }
+
+    // CASE4 내가 참여한 투표이면서 카테고리가 있는 경우 (type: "participated", categoryId=${categoryId} )
+    else if (categoryId !== 1 && voteFilter === "participated") {
+      await axios
+        .get(
+          `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote?type=participated&categoryId=${categoryId}`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        )
+        .then((res) => setVoteInfo(res.data.result))
+        .catch(console.log);
+    }
+
+    // CASE5 내가 만든 투표이면서 전체인 경우 (type: "posted", categoryId x )
+    else if (categoryId === 1 && voteFilter === "posted") {
+      await axios
+        .get(
+          `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote?type=posted`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        )
+        .then((res) => setVoteInfo(res.data.createdVoteList))
+        .catch(console.log);
+    }
+
+    // CASE6 내가 만든 투표이면서 카테고리가 있는 경우 (type: "posted", categoryId=%{categoryId})
+    else if (categoryId !== 1 && voteFilter === "posted") {
+      await axios
+        .get(
+          `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote?type=posted&categoryId=${categoryId}`,
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        )
+        .then((res) => {
+          setVoteInfo(res.data.createdVoteList);
+        })
+        .catch(console.log);
+    }
   };
 
   useEffect(() => {
     voteListHandler();
-  }, []);
+  }, [categoryId, voteFilter]);
 
-  const categoryHandler = async (id) => {
-    await axios
-      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${id}`)
-      .then((res) => setVoteInfo(res.data))
-      .catch((err) => {
-        if (err.response.status === 403 || err.response.status === 404) {
-          history.push("/login");
-        } else {
-          console.log(err);
-        }
-      });
-  };
+  // const categoryHandler = async (id) => {
+  //   await axios
+  //     .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${id}`)
+  //     .then((res) => {
+  //       setVoteInfo(res.data);
+  //       setCategoryId(id);
+  //     })
+  //     .catch((err) => {
+  //       if (err.response.status === 403 || err.response.status === 404) {
+  //         history.push("/login");
+  //       } else {
+  //         console.log(err);
+  //       }
+  //     });
+  // };
 
-  const voteUserPostHandler = async () => {
-    setVoteFilter("posted");
-    await axios
-      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-        params: { type: "posted" },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
+  // const voteUserPostHandler = async () => {
+  //   setVoteFilter("posted");
+  //   if (categoryId !== 1) {
+  //     await axios
+  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+  //         params: { type: "posted", categoryId },
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       })
+  //       .then((res) => {
+  //         console.log(res.data);
+  //         setVoteInfo(res.data.createdVoteList);
+  //       })
+  //       .catch((err) => {
+  //         if (err.response.status === 403 || err.response.status === 404) {
+  //           setShowModal(true);
+  //         } else if (err.response.status === 401) {
+  //           history.push("/login");
+  //         } else {
+  //           console.log(err);
+  //         }
+  //       });
+  //   } else {
+  //     await axios
+  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+  //         params: { type: "posted" },
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       })
+  //       .then((res) => {
+  //         console.log(res.data);
+  //         setVoteInfo(res.data.createdVoteList);
+  //       })
+  //       .catch((err) => {
+  //         if (err.response.status === 403 || err.response.status === 404) {
+  //           setShowModal(true);
+  //         } else if (err.response.status === 401) {
+  //           history.push("/login");
+  //         } else {
+  //           console.log(err);
+  //         }
+  //       });
+  //   }
+  // };
 
-        setVoteInfo(res.data.createdVoteList);
-      })
-      .catch((err) => {
-        if (err.response.status === 403 || err.response.status === 404) {
-          setShowModal(true);
-        } else if (err.response.status === 401) {
-          history.push("/login");
-        } else {
-          console.log(err);
-        }
-      });
-  };
-
-  const voteUserParticipateHandler = async () => {
-    setVoteFilter("participated");
-    await axios
-      .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-        params: { type: "participated" },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-
-        setVoteInfo(res.data.participatedVoteList);
-      })
-      .catch((err) => {
-        if (err.response.status === 403 || err.response.status === 404) {
-          setShowModal(true);
-        } else if (err.response.status === 401) {
-          history.push("/login");
-        } else {
-          console.log(err);
-        }
-      });
-  };
-  console.log(voteInfo);
+  // const voteUserParticipateHandler = async () => {
+  //   setVoteFilter("participated");
+  //   if (categoryId !== 1) {
+  //     await axios
+  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+  //         params: { type: "participated", categoryId },
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       })
+  //       .then((res) => {
+  //         console.log(res.data);
+  //         setVoteInfo(res.data.participatedVoteList);
+  //       })
+  //       .catch((err) => {
+  //         if (err.response.status === 403 || err.response.status === 404) {
+  //           setShowModal(true);
+  //         } else if (err.response.status === 401) {
+  //           history.push("/login");
+  //         } else {
+  //           console.log(err);
+  //         }
+  //       });
+  //   } else {
+  //     await axios
+  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+  //         params: { type: "participated" },
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       })
+  //       .then((res) => {
+  //         console.log(res.data);
+  //         setVoteInfo(res.data.participatedVoteList);
+  //       })
+  //       .catch((err) => {
+  //         if (err.response.status === 403 || err.response.status === 404) {
+  //           setShowModal(true);
+  //         } else if (err.response.status === 401) {
+  //           history.push("/login");
+  //         } else {
+  //           console.log(err);
+  //         }
+  //       });
+  //   }
+  // };
   return (
     <div className="relative">
       <div className="sticky top-0 bg-white z-50">
@@ -131,7 +245,7 @@ export default function Home({ category }) {
                 <button
                   onClick={() => {
                     setCategoryFilter(ct.title);
-                    categoryHandler(ct.id);
+                    setCategoryId(ct.id);
                   }}
                   className={categoryFilterClass(ct.title)}
                   key={ct.id}
@@ -143,23 +257,24 @@ export default function Home({ category }) {
             })}
           </div>
         </div>
-
         <div className="h-2 w-full bg-[#f2f2f2]"></div>
         <div className="grid grid-cols-3">
           <button
-            onClick={() => setVoteFilter("latest")}
+            onClick={() => {
+              setVoteFilter("latest");
+            }}
             className={voteFilterClass("latest")}
           >
             최신 투표
           </button>
           <button
-            onClick={voteUserParticipateHandler}
+            onClick={() => setVoteFilter("participated")}
             className={voteFilterClass("participated")}
           >
             내가 참여한 투표
           </button>
           <button
-            onClick={voteUserPostHandler}
+            onClick={() => setVoteFilter("posted")}
             className={voteFilterClass("posted")}
           >
             내가 만든 투표
@@ -181,7 +296,7 @@ export default function Home({ category }) {
 
       <div className="pt-10 px-5 pb-10">
         {voteInfo
-          .sort((a, b) => b.createdAt - a.createdAt)
+          .sort((a, b) => b.id - a.id)
           .map((vote) => (
             <div
               onClick={() => history.push(`/vote/${vote.id}`)}
