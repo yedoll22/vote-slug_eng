@@ -1,6 +1,9 @@
-const { User, Vote, Category, User_vote } = require("../models");
+const { User, Vote, Category, User_vote } = require("../database/models");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+const salt = 12;
+
 dotenv.config();
 
 module.exports = {
@@ -64,15 +67,19 @@ module.exports = {
     const userId = req.userId;
     const { password, newPassword, nickname } = req.body;
     try {
+      const userInfo = await User.findOne({ id: userId });
+      console.log(userInfo);
+      const hashedPassword = userInfo.password;
+      const match = await bcrypt.compare(password, hashedPassword);
       // 유저가 입력한 패스워드 검증
-      const isMatchPassword = await User.findOne({
-        where: { id: userId, password },
-      });
-      if (!isMatchPassword)
-        return res.status(401).json({ message: "wrong password" });
+      if (!match) return res.status(401).json({ message: "wrong password" });
       // body로 newPassword가 들어왔을 때 비번 변경시켜줌.
       if (newPassword) {
-        await User.update({ password: newPassword }, { where: { id: userId } });
+        const newHashedPassword = await bcrypt.hash(newPassword, salt);
+        await User.update(
+          { password: newHashedPassword },
+          { where: { id: userId } }
+        );
         return res.sendStatus(200);
       }
       if (nickname) {
@@ -87,6 +94,8 @@ module.exports = {
   signUp: async (req, res) => {
     const { email, password, nickname, gender, dob } = req.body;
     try {
+      // 비밀번호 해싱
+      const hashedPassword = await bcrypt.hash(password, salt);
       // email과 nickname 중복검사
       const emailResult = await User.findOne({ where: { email } });
       const nicknameResult = await User.findOne({ where: { nickname } });
@@ -99,31 +108,35 @@ module.exports = {
       // email과 nickname 중복 아닐 시 정상적으로 db에 user정보 Insert
       await User.create({
         email,
-        password,
+        password: hashedPassword,
         nickname,
         gender,
         dob,
       });
       return res.sendStatus(201);
     } catch (err) {
+      console.log(err);
       return res.sendStatus(500);
     }
   },
 
   login: async (req, res) => {
     const { email, password } = req.body;
-
+    console.log("email", email);
+    console.log("password", password);
     try {
       // 가입된 이메일이 존재하는지 확인.
-      const emailExist = await User.findOne({ where: { email } });
+      const emailExist = await User.findOne({ where: { email: email } });
       if (!emailExist) return res.status(401).json({ message: "wrong email" });
-
-      // 해당 이메일의 비밀번호가 일치하는지 확인.
-      const user = await User.findOne({ where: { email, password } });
-      if (!user) return res.status(401).json({ message: "wrong password" });
+      // 비밀번호 검증 // 해당 이메일의 비밀번호가 일치하는지 확인.
+      console.log("emailexist", emailExist);
+      const hashedPassword = emailExist.password;
+      const id = emailExist.id;
+      const match = await bcrypt.compare(password, hashedPassword);
+      if (!match) return res.status(401).json({ message: "wrong password" });
 
       // 회원 정보 일치 확인 -> jwt발급해줌.
-      const payload = { id: user.id };
+      const payload = { id };
 
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_KEY, {
         expiresIn: "1d",
@@ -145,6 +158,7 @@ module.exports = {
           message: "login complete",
         });
     } catch (err) {
+      console.log(err);
       return res.sendStatus(500);
     }
   },
