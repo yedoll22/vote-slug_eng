@@ -72,6 +72,7 @@ export default function Login() {
         history.push("/");
       })
       .catch((err) => {
+        console.log(err.response.data);
         if (err.response.data.message === "wrong email") {
           setLoginErrorMessage("존재하지 않는 이메일입니다.");
         } else if (err.response.data.message === "wrong password") {

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Home from "./components/Home";
 import VotePost from "./components/VotePost";
@@ -13,13 +12,13 @@ import Welcome from "./components/Welcome";
 
 function App() {
   const category = [
-    { title: "전체", id: "1" },
-    { title: "연애", id: "2" },
-    { title: "음식", id: "3" },
-    { title: "여행", id: "4" },
-    { title: "일상", id: "5" },
-    { title: "패션", id: "6" },
-    { title: "etc", id: "7" },
+    { title: "전체", id: 1 },
+    { title: "연애", id: 2 },
+    { title: "음식", id: 3 },
+    { title: "여행", id: 4 },
+    { title: "일상", id: 5 },
+    { title: "패션", id: 6 },
+    { title: "etc", id: 7 },
   ];
 
   const isLogin = useSelector((state) => state.isLogin.value);

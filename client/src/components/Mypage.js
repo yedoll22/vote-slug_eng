@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import SecessionModal from "./SecessionModal";
 import { removeAccessToken } from "../slice/accessTokenSlice";
+import { logoutHandler } from "../slice/isLoginSlice";
 export default function Mypage() {
   const history = useHistory();
   const accessToken = useSelector((state) => state.accessToken.value);
@@ -48,6 +49,7 @@ export default function Mypage() {
       })
       .then((res) => {
         dispatch(removeAccessToken());
+        dispatch(logoutHandler());
         history.push("/login");
       });
   };
