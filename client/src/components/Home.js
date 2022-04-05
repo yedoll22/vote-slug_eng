@@ -221,6 +221,31 @@ export default function Home({ category }) {
   //       });
   //   }
   // };
+
+//   const voteUserParticipateHandler = async () => {
+//     setVoteFilter("participated");
+//     await axios
+//       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
+//         params: { type: "participated" },
+//         headers: {
+//           Authorization: `Bearer ${accessToken}`,
+//         },
+//       })
+//       .then((res) => {
+//         setVoteInfo(res.data.participatedVoteList);
+//       })
+//       .catch((err) => {
+//         if (err.response.status === 403 || err.response.status === 404) {
+//           setShowModal(true);
+//         } else if (err.response.status === 401) {
+//           history.push("/login");
+//         } else {
+//           console.log(err);
+//         }
+//       });
+//   };
+//   console.log(voteInfo);
+
   return (
     <div className="relative">
       <div className="sticky top-0 bg-white z-50">

@@ -1,6 +1,9 @@
-const { User, Vote, Category, User_vote } = require("../models");
+const { User, Vote, Category, User_vote } = require("../database/models");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+const salt = 12;
+
 dotenv.config();
 
 module.exports = {
@@ -64,15 +67,19 @@ module.exports = {
     const userId = req.userId;
     const { password, newPassword, nickname } = req.body;
     try {
+      const userInfo = await User.findOne({ id: userId });
+      console.log(userInfo);
+      const hashedPassword = userInfo.password;
+      const match = await bcrypt.compare(password, hashedPassword);
       // 유저가 입력한 패스워드 검증
-      const isMatchPassword = await User.findOne({
-        where: { id: userId, password },
-      });
-      if (!isMatchPassword)
-        return res.status(401).json({ message: "wrong password" });
+      if (!match) return res.status(401).json({ message: "wrong password" });
       // body로 newPassword가 들어왔을 때 비번 변경시켜줌.
       if (newPassword) {
-        await User.update({ password: newPassword }, { where: { id: userId } });
+        const newHashedPassword = await bcrypt.hash(newPassword, salt);
+        await User.update(
+          { password: newHashedPassword },
+          { where: { id: userId } }
+        );
         return res.sendStatus(200);
       }
       if (nickname) {
@@ -87,6 +94,8 @@ module.exports = {
   signUp: async (req, res) => {
     const { email, password, nickname, gender, dob } = req.body;
     try {
+      // 비밀번호 해싱
+      const hashedPassword = await bcrypt.hash(password, salt);
       // email과 nickname 중복검사
       const emailResult = await User.findOne({ where: { email } });
       const nicknameResult = await User.findOne({ where: { nickname } });
@@ -99,31 +108,35 @@ module.exports = {
       // email과 nickname 중복 아닐 시 정상적으로 db에 user정보 Insert
       await User.create({
         email,
-        password,
+        password: hashedPassword,
         nickname,
         gender,
         dob,
       });
       return res.sendStatus(201);
     } catch (err) {
+      console.log(err);
       return res.sendStatus(500);
     }
   },
 
   login: async (req, res) => {
     const { email, password } = req.body;
-
+    console.log("email", email);
+    console.log("password", password);
     try {
       // 가입된 이메일이 존재하는지 확인.
-      const emailExist = await User.findOne({ where: { email } });
+      const emailExist = await User.findOne({ where: { email: email } });
       if (!emailExist) return res.status(401).json({ message: "wrong email" });
-
-      // 해당 이메일의 비밀번호가 일치하는지 확인.
-      const user = await User.findOne({ where: { email, password } });
-      if (!user) return res.status(401).json({ message: "wrong password" });
+      // 비밀번호 검증 // 해당 이메일의 비밀번호가 일치하는지 확인.
+      console.log("emailexist", emailExist);
+      const hashedPassword = emailExist.password;
+      const id = emailExist.id;
+      const match = await bcrypt.compare(password, hashedPassword);
+      if (!match) return res.status(401).json({ message: "wrong password" });
 
       // 회원 정보 일치 확인 -> jwt발급해줌.
-      const payload = { id: user.id };
+      const payload = { id };
 
       const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_KEY, {
         expiresIn: "1d",
@@ -135,15 +148,17 @@ module.exports = {
       return res
         .status(200)
         .cookie("refreshToken", refreshToken, {
-          sameSite: "Lax",
-          // secure: true,
+          sameSite: "None",
+          secure: true,
           httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 30, // 30d
         })
         .json({
           accessToken: accessToken,
           message: "login complete",
         });
     } catch (err) {
+      console.log(err);
       return res.sendStatus(500);
     }
   },
@@ -155,10 +170,61 @@ module.exports = {
 
   getMyVote: async (req, res) => {
     const userId = req.userId;
-    const { type } = req.query;
-    // type이 posted인경우
+    const { type, categoryId } = req.query;
+    // type이 posted인경우 && categoryId를 쿼리로 받은 경우
     try {
-      if (type === "posted") {
+      if (type === "posted" && categoryId) {
+        const createdVoteList = await Vote.findAll({
+          where: { userId, categoryId },
+          attributes: [
+            "id", // voteId
+            "voteTitle",
+            "voteOption1",
+            "voteOption2",
+            "voteOption1Count",
+            "voteOption2Count",
+            "createdAt",
+            "User.nickname", // author
+            "Category.categoryTitle",
+          ],
+          include: [
+            { model: Category, attributes: ["categoryTitle"] },
+            { model: User, attributes: ["nickname"] },
+          ],
+        });
+
+        return res.status(200).json({ createdVoteList });
+      } else if (type === "participated" && categoryId) {
+        const participatedVoteList = await User_vote.findAll({
+          where: { userId },
+          attributes: [
+            "voteOption1", // boolean 자기가 어디 투표했는지
+            "voteOption2", // boolean 자기가 어디 투표했는지
+            "Vote.voteTitle",
+            "Vote.voteOption1Count",
+            "Vote.voteOption2Count",
+            "Vote.createdAt",
+            "Vote.voteOption1", // 투표항목 1
+            "Vote.voteOption2", // 투표항목 2
+            "Vote.Category.categoryTitle",
+          ],
+          include: [
+            {
+              model: Vote,
+              where: { categoryId },
+              include: [
+                {
+                  model: Category,
+                  attributes: ["categoryTitle"],
+                },
+                { model: User, attributes: ["nickname"] },
+              ],
+            },
+          ],
+        });
+
+        return res.status(200).json({ participatedVoteList });
+      } else if (type === "posted") {
         const createdVoteList = await Vote.findAll({
           where: { userId },
           attributes: [
@@ -179,9 +245,7 @@ module.exports = {
         });
 
         return res.status(200).json({ createdVoteList });
-      }
-
-      if (type === "participated") {
+      } else if (type === "participated") {
         const participatedVoteList = await User_vote.findAll({
           where: { userId },
           attributes: [
@@ -204,6 +268,7 @@ module.exports = {
             },
           ],
         });
+
         return res.status(200).json({ participatedVoteList });
       }
     } catch (err) {
