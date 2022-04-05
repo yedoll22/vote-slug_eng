@@ -135,9 +135,10 @@ module.exports = {
       return res
         .status(200)
         .cookie("refreshToken", refreshToken, {
-          sameSite: "Lax",
-          // secure: true,
+          sameSite: "None",
+          secure: true,
           httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 30, // 30d
         })
         .json({
           accessToken: accessToken,
@@ -155,10 +156,61 @@ module.exports = {
 
   getMyVote: async (req, res) => {
     const userId = req.userId;
-    const { type } = req.query;
-    // type이 posted인경우
+    const { type, categoryId } = req.query;
+    // type이 posted인경우 && categoryId를 쿼리로 받은 경우
     try {
-      if (type === "posted") {
+      if (type === "posted" && categoryId) {
+        const createdVoteList = await Vote.findAll({
+          where: { userId, categoryId },
+          attributes: [
+            "id", // voteId
+            "voteTitle",
+            "voteOption1",
+            "voteOption2",
+            "voteOption1Count",
+            "voteOption2Count",
+            "createdAt",
+            "User.nickname", // author
+            "Category.categoryTitle",
+          ],
+          include: [
+            { model: Category, attributes: ["categoryTitle"] },
+            { model: User, attributes: ["nickname"] },
+          ],
+        });
+
+        return res.status(200).json({ createdVoteList });
+      } else if (type === "participated" && categoryId) {
+        const participatedVoteList = await User_vote.findAll({
+          where: { userId },
+          attributes: [
+            "voteOption1", // boolean 자기가 어디 투표했는지
+            "voteOption2", // boolean 자기가 어디 투표했는지
+            "Vote.voteTitle",
+            "Vote.voteOption1Count",
+            "Vote.voteOption2Count",
+            "Vote.createdAt",
+            "Vote.voteOption1", // 투표항목 1
+            "Vote.voteOption2", // 투표항목 2
+            "Vote.Category.categoryTitle",
+          ],
+          include: [
+            {
+              model: Vote,
+              where: { categoryId },
+              include: [
+                {
+                  model: Category,
+                  attributes: ["categoryTitle"],
+                },
+                { model: User, attributes: ["nickname"] },
+              ],
+            },
+          ],
+        });
+
+        return res.status(200).json({ participatedVoteList });
+      } else if (type === "posted") {
         const createdVoteList = await Vote.findAll({
           where: { userId },
           attributes: [
@@ -179,9 +231,7 @@ module.exports = {
         });
 
         return res.status(200).json({ createdVoteList });
-      }
-
-      if (type === "participated") {
+      } else if (type === "participated") {
         const participatedVoteList = await User_vote.findAll({
           where: { userId },
           attributes: [
@@ -204,6 +254,7 @@ module.exports = {
             },
           ],
         });
+
         return res.status(200).json({ participatedVoteList });
       }
     } catch (err) {

@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const { User, Vote, Category, User_vote } = require("../models");
 
 module.exports = {
@@ -51,29 +52,43 @@ module.exports = {
   },
 
   getById: async (req, res) => {
+    const { authorization } = req.headers;
     const { voteId } = req.params;
     //GET
     try {
-      if (voteId) {
-        const selectedVote = await Vote.findByPk(voteId, {
-          attributes: [
-            "id",
-            "voteTitle",
-            "voteOption1",
-            "voteOption2",
-            "voteOption1Count",
-            "voteOption2Count",
-            "createdAt",
-            "User.nickname",
-            "Category.categoryTitle",
-          ],
-          include: [
-            { model: Category, attributes: ["categoryTitle"] },
-            { model: User, attributes: ["nickname"] },
-          ],
+      const selectedVote = await Vote.findByPk(voteId, {
+        attributes: [
+          "id",
+          "voteTitle",
+          "voteOption1",
+          "voteOption2",
+          "voteOption1Count",
+          "voteOption2Count",
+          "createdAt",
+          "User.nickname",
+          "Category.categoryTitle",
+        ],
+        include: [
+          { model: Category, attributes: ["categoryTitle"] },
+          { model: User, attributes: ["nickname"] },
+        ],
+      });
+
+      if (authorization) {
+        const accessToken = authorization.split(" ")[1];
+        const userData = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+        const userId = userData.id;
+        const participation = await User_vote.findOne({
+          where: { userId, voteId },
         });
-        return res.status(200).json(selectedVote);
+
+        if (participation)
+          return res.status(200).json({ participation: true, selectedVote });
+        else
+          return res.status(200).json({ participation: false, selectedVote });
       }
+
+      return res.status(200).json({ participation: false, selectedVote });
     } catch (err) {
       console.log(err);
       return res.sendStatus(500);
