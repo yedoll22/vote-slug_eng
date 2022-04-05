@@ -158,8 +158,18 @@ export default function VoteDetail() {
               </div>
               {/* 
               {voteData.voteOption1Count && ( */}
-              <div className="text-graytypo text-[14px] font-normal">
-                {voteData.voteOption1Count + voteData.voteOption2Count}
+              <div className="flex items-center">
+                <div className="pb-[0.5px]">
+                  <img
+                    className="w-4 h-4 mr-[5px] opacity-50"
+                    src="/images/view-icon.png"
+                    alt=""
+                  />
+                </div>
+
+                <div className="text-graytypo text-[14px] font-normal">
+                  {voteData.voteOption1Count + voteData.voteOption2Count}
+                </div>
               </div>
               {/* )} */}
             </div>

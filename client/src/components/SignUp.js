@@ -5,10 +5,11 @@ import { useHistory } from "react-router-dom";
 axios.defaults.withCredentials = true;
 
 export default function SignUp() {
+  const [dropdown, setDropdown] = useState(false);
   //이름, 이메일, 비밀번호, 비밀번호 확인
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("성별을 선택해 주세요.");
   const [dob, setDob] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
@@ -18,7 +19,6 @@ export default function SignUp() {
   const [emailMessage, setEmailMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
-  const [genderMessage, setGenderMessage] = useState("");
   const [dobMessage, setDobMessage] = useState();
   const [emailSignupMessage, setEmailSignupMessage] = useState("");
   const [nicknameSignupMessage, setNicknameSignupMessage] = useState("");
@@ -26,7 +26,7 @@ export default function SignUp() {
   // 유효성 검사
   const [isNickname, setIsNickname] = useState(false);
   const [isEmail, setIsEmail] = useState(false);
-  const [isGender, setIsGender] = useState(false);
+  const [isGender, setIsGender] = useState(null);
   const [isPassword, setIsPassword] = useState(false);
   const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
   const [isDob, setIsDob] = useState(false);
@@ -125,16 +125,11 @@ export default function SignUp() {
     }
   };
 
-  const onChangeGender = (e) => {
-    const genderCurrent = e.target.value;
-    setGender(genderCurrent);
-    if (gender === null) {
-      setGenderMessage("");
+  const genderValidate = () => {
+    if (gender === "성별을 선택해 주세요.") {
       setIsGender(false);
-    } else {
-      setGenderMessage("성별을 선택하셨습니다");
-      setIsGender(true);
-    }
+      return;
+    } else setIsGender(true);
   };
 
   const onChangeDob = (e) => {
@@ -238,29 +233,80 @@ export default function SignUp() {
             </span>
           ) : null}
         </div>
-        <div className="flex flex-col pb-[18px] mb-2">
+
+        <div className="flex flex-col pb-[18px] mb-2 relative">
           <span className="ml-4 text-[#222222] font-medium text-base mb-2">
             성별
           </span>
-          <div className="flex relative">
-            <select
-              onChange={onChangeGender}
-              className="pl-4 rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo text-sm font-normal bg-transparent z-20 focus:outline-VsGreen"
-              required
+          <div>
+            <button
+              onClick={() => setDropdown(!dropdown)}
+              type="button"
+              className={
+                gender === "성별을 선택해 주세요."
+                  ? "inline-flex w-full justify-between rounded-[8px] border border-[#D3D3D3] px-4 py-[14px] bg-white text-sm font-normal text-[#7A7A7A] focus:outline-none focus:border-[3px] focus:border-VsGreen"
+                  : "inline-flex w-full justify-between rounded-[8px] border border-[#D3D3D3] px-4 py-[14px] bg-white text-sm font-normal text-black focus:outline-none focus:border-[3px] focus:border-VsGreen"
+              }
             >
-              <option className="hidden" disabled selected>
-                성별을 선택해주세요．
-              </option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Non binary</option>
-            </select>
-            <img
-              className="absolute right-2 top-3 z-10"
-              src="images/dropdown.svg"
-              alt=""
-            />
+              {gender}
+              {dropdown ? (
+                <img
+                  className="absolute right-2 top-[45px] z-10"
+                  src="images/dropdown-reverse.svg"
+                  alt="dropdown"
+                />
+              ) : (
+                <img
+                  className="absolute right-2 top-[45px] z-10"
+                  src="images/dropdown.svg"
+                  alt="dropdown"
+                />
+              )}
+            </button>
           </div>
+
+          <div
+            className={
+              dropdown
+                ? "z-50 w-full absolute origin-top-right top-[80px] right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                : "z-50 hidden absolute w-full origin-top-right right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+            }
+          >
+            <div onClick={() => setDropdown(!dropdown)} className="py-1">
+              <div
+                onClick={() => {
+                  setGender("여자");
+                  setIsGender(true);
+                }}
+                className="text-black block px-4 py-2 text-sm hover:text-white hover:bg-VsGreen"
+              >
+                여자
+              </div>
+              <div
+                onClick={() => {
+                  setGender("남자");
+                  setIsGender(true);
+                }}
+                className="text-black block px-4 py-2 text-sm hover:text-white hover:bg-VsGreen"
+              >
+                남자
+              </div>
+              <div
+                onClick={() => {
+                  setGender("선택안함");
+                  setIsGender(true);
+                }}
+                className="text-black block px-4 py-2 text-sm hover:text-white hover:bg-VsGreen"
+              >
+                선택안함
+              </div>
+            </div>
+          </div>
+          {isGender === false ? (
+            <div className="pl-2 pt-1 text-sm font-normal text-VsRed">
+              성별은 필수선택 항목입니다.
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-col pb-[18px] mb-2">
           <span className="ml-4 text-[#222222] font-medium text-base mb-2">
