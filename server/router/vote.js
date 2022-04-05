@@ -10,6 +10,6 @@ router.get("/:voteId", voteController.getById);
 router.post("/", auth, voteController.post);
 router.patch("/", auth, voteController.patch);
 
-router.delete("/:voetId", auth, voteController.delete);
+router.delete("/:voteId", auth, voteController.delete);
 
 module.exports = router;

@@ -93,7 +93,6 @@ export default function Home({ category }) {
         },
       })
       .then((res) => {
-
         setVoteInfo(res.data.participatedVoteList);
       })
       .catch((err) => {
