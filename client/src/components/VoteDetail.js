@@ -44,7 +44,6 @@ export default function VoteDetail() {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
         .then((result) => {
-          console.log("server parti", result.data.participation);
           setVoteData(result.data.selectedVote);
           setParticipation(result.data.participation);
           if (
