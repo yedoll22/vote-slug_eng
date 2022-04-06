@@ -4,12 +4,14 @@ import { useHistory, useParams } from "react-router-dom";
 import VotePostModal from "./VotePostModal";
 import { useSelector } from "react-redux";
 import LoggedinModal from "./LoggedinModal";
+import DeleteModal from "./DeleteModal";
 axios.defaults.withCredentials = true;
 
 export default function VoteDetail() {
   const [voteData, setVoteData] = useState({});
   const [postData, setPostData] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [participation, setParticipation] = useState(false);
   const [option1Percent, setOption1Percent] = useState(null);
   const [option2Percent, setOption2Percent] = useState(null);
@@ -18,6 +20,22 @@ export default function VoteDetail() {
   const { voteId } = useParams();
   const accessToken = useSelector((state) => state.accessToken.value);
   const isLogin = useSelector((state) => state.isLogin.value);
+  const voteFilter = useSelector((state) => state.voteFilter.value);
+
+  const deleteVoteHandler = async () => {
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/${voteId}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      history.push("/");
+    } catch (err) {
+      const status = err.response.status;
+      if (status === 401 || status === 403 || status === 404) {
+        history.push("/");
+      }
+    }
+  };
 
   const voteInfoHandler = async () => {
     if (isLogin) {
@@ -146,13 +164,40 @@ export default function VoteDetail() {
         <img src="/images/vslogo.svg" alt="vslogo"></img>
       </div>
       <div className="pt-6">
-        <div className="pl-5 text-xl font-medium text-[#222222]">
-          투표 상세 보기
+        <div className="flex items-center justify-between px-5 text-xl font-medium text-[#222222]">
+          <div>투표상세보기</div>
+          {voteFilter === "posted" ? (
+            <div onClick={() => setShowDeleteModal(true)}>
+              <img
+                className="w-6 cursor-pointer"
+                src="/images/delete-vote-icon.png"
+                alt=""
+              />
+            </div>
+          ) : null}
         </div>
         <div className="pt-6 px-5 mb-2">
           <div className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent">
             <div className="flex justify-between mb-4">
-              <div className="text-graytypo text-[14px] font-normal">
+              <div className="text-graytypo text-[14px] font-normal flex">
+                {voteData.Category?.categoryTitle === "음식" && (
+                  <div className="mr-3">🍔</div>
+                )}
+                {voteData.Category?.categoryTitle === "연애" && (
+                  <div className="mr-3">💌</div>
+                )}
+                {voteData.Category?.categoryTitle === "여행" && (
+                  <div className="mr-3">🛩</div>
+                )}
+                {voteData.Category?.categoryTitle === "일상" && (
+                  <div className="mr-3">😌</div>
+                )}
+                {voteData.Category?.categoryTitle === "패션" && (
+                  <div className="mr-3">👬</div>
+                )}
+                {voteData.Category?.categoryTitle === "etc" && (
+                  <div className="mr-3">🎸</div>
+                )}
                 {voteData.Category?.categoryTitle}
               </div>
               {/* 
@@ -218,6 +263,12 @@ export default function VoteDetail() {
       )}
       {participation && showModal && (
         <LoggedinModal setShowModal={setShowModal} />
+      )}
+      {showDeleteModal && (
+        <DeleteModal
+          setShowDeleteModal={setShowDeleteModal}
+          deleteVote={deleteVoteHandler}
+        />
       )}
     </div>
   );
