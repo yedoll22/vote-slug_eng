@@ -162,8 +162,9 @@ export default function Login() {
             </div>
           ) : null}
         </div>
-
         <button
+          disabled={!(userInfo.email && userInfo.password)}
+          // 로그인 버튼 비활성화 추가
           onClick={loginRequestHandler}
           className="bg-VsGreen rounded-[24px] w-full h-11 text-xl font-medium"
         >

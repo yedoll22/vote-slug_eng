@@ -64,7 +64,15 @@ export default function Home({ category }) {
           }
         )
         .then((res) => setVoteInfo(res.data.result))
-        .catch(console.log);
+        .catch((err) => {
+          if (err.response.status === 403 || err.response.status === 404) {
+            setShowModal(true);
+          } else if (err.response.status === 401) {
+            history.push("/login");
+          } else {
+            console.log(err);
+          }
+        });
     }
 
     // CASE4 내가 참여한 투표이면서 카테고리가 있는 경우 (type: "participated", categoryId=${categoryId} )
@@ -77,7 +85,15 @@ export default function Home({ category }) {
           }
         )
         .then((res) => setVoteInfo(res.data.result))
-        .catch(console.log);
+        .catch((err) => {
+          if (err.response.status === 403 || err.response.status === 404) {
+            setShowModal(true);
+          } else if (err.response.status === 401) {
+            history.push("/login");
+          } else {
+            console.log(err);
+          }
+        });
     }
 
     // CASE5 내가 만든 투표이면서 전체인 경우 (type: "posted", categoryId x )
@@ -90,7 +106,15 @@ export default function Home({ category }) {
           }
         )
         .then((res) => setVoteInfo(res.data.createdVoteList))
-        .catch(console.log);
+        .catch((err) => {
+          if (err.response.status === 403 || err.response.status === 404) {
+            setShowModal(true);
+          } else if (err.response.status === 401) {
+            history.push("/login");
+          } else {
+            console.log(err);
+          }
+        });
     }
 
     // CASE6 내가 만든 투표이면서 카테고리가 있는 경우 (type: "posted", categoryId=%{categoryId})
@@ -105,147 +129,21 @@ export default function Home({ category }) {
         .then((res) => {
           setVoteInfo(res.data.createdVoteList);
         })
-        .catch(console.log);
+        .catch((err) => {
+          if (err.response.status === 403 || err.response.status === 404) {
+            setShowModal(true);
+          } else if (err.response.status === 401) {
+            history.push("/login");
+          } else {
+            console.log(err);
+          }
+        });
     }
   };
 
   useEffect(() => {
     voteListHandler();
   }, [categoryId, voteFilter]);
-
-  // const categoryHandler = async (id) => {
-  //   await axios
-  //     .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote?categoryId=${id}`)
-  //     .then((res) => {
-  //       setVoteInfo(res.data);
-  //       setCategoryId(id);
-  //     })
-  //     .catch((err) => {
-  //       if (err.response.status === 403 || err.response.status === 404) {
-  //         history.push("/login");
-  //       } else {
-  //         console.log(err);
-  //       }
-  //     });
-  // };
-
-  // const voteUserPostHandler = async () => {
-  //   setVoteFilter("posted");
-  //   if (categoryId !== 1) {
-  //     await axios
-  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-  //         params: { type: "posted", categoryId },
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         setVoteInfo(res.data.createdVoteList);
-  //       })
-  //       .catch((err) => {
-  //         if (err.response.status === 403 || err.response.status === 404) {
-  //           setShowModal(true);
-  //         } else if (err.response.status === 401) {
-  //           history.push("/login");
-  //         } else {
-  //           console.log(err);
-  //         }
-  //       });
-  //   } else {
-  //     await axios
-  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-  //         params: { type: "posted" },
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         setVoteInfo(res.data.createdVoteList);
-  //       })
-  //       .catch((err) => {
-  //         if (err.response.status === 403 || err.response.status === 404) {
-  //           setShowModal(true);
-  //         } else if (err.response.status === 401) {
-  //           history.push("/login");
-  //         } else {
-  //           console.log(err);
-  //         }
-  //       });
-  //   }
-  // };
-
-  // const voteUserParticipateHandler = async () => {
-  //   setVoteFilter("participated");
-  //   if (categoryId !== 1) {
-  //     await axios
-  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-  //         params: { type: "participated", categoryId },
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         setVoteInfo(res.data.participatedVoteList);
-  //       })
-  //       .catch((err) => {
-  //         if (err.response.status === 403 || err.response.status === 404) {
-  //           setShowModal(true);
-  //         } else if (err.response.status === 401) {
-  //           history.push("/login");
-  //         } else {
-  //           console.log(err);
-  //         }
-  //       });
-  //   } else {
-  //     await axios
-  //       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-  //         params: { type: "participated" },
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         setVoteInfo(res.data.participatedVoteList);
-  //       })
-  //       .catch((err) => {
-  //         if (err.response.status === 403 || err.response.status === 404) {
-  //           setShowModal(true);
-  //         } else if (err.response.status === 401) {
-  //           history.push("/login");
-  //         } else {
-  //           console.log(err);
-  //         }
-  //       });
-  //   }
-  // };
-
-  // const voteUserParticipateHandler = async () => {
-  //   setVoteFilter("participated");
-  //   await axios
-  //     .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/vote`, {
-  //       params: { type: "participated" },
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setVoteInfo(res.data.participatedVoteList);
-  //     })
-  //     .catch((err) => {
-  //       if (err.response.status === 403 || err.response.status === 404) {
-  //         setShowModal(true);
-  //       } else if (err.response.status === 401) {
-  //         history.push("/login");
-  //       } else {
-  //         console.log(err);
-  //       }
-  //     });
-  // };
-  // console.log(voteInfo);
 
   return (
     <div className="relative">
