@@ -1,10 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 const Welcome = () => {
   const history = useHistory();
+  const [opacity, setOpacity] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setOpacity(true), 100);
+  }, []);
+
   return (
-    <div className="pt-16 bg-VsGreenLight h-[100vh]">
+    <div
+      className={
+        opacity
+          ? "pt-16 bg-VsGreenLight h-[100vh] transition-all duration-[3000ms]"
+          : "pt-16 bg-VsGreenLight h-[100vh] opacity-0 duration-[3000ms]"
+      }
+    >
       <div className="pl-6 py-[10px] text-black font-bold text-[24px]">
         환영합니다!
       </div>

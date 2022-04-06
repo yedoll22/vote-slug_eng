@@ -19,7 +19,7 @@ export default function SignUp() {
   const [emailMessage, setEmailMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordConfirmMessage, setPasswordConfirmMessage] = useState("");
-  const [dobMessage, setDobMessage] = useState();
+  const [dobMessage, setDobMessage] = useState("");
   const [emailSignupMessage, setEmailSignupMessage] = useState("");
   const [nicknameSignupMessage, setNicknameSignupMessage] = useState("");
 
@@ -30,8 +30,6 @@ export default function SignUp() {
   const [isPassword, setIsPassword] = useState(false);
   const [isPasswordConfirm, setIsPasswordConfirm] = useState(false);
   const [isDob, setIsDob] = useState(false);
-  const [isRegistedEmail, setIsRegistedEmail] = useState(false);
-  const [isRegistedNickname, setIsRegistedNickname] = useState(false);
 
   useEffect(() => {
     if (password.length <= 7 || password.length >= 17) {
@@ -45,31 +43,31 @@ export default function SignUp() {
 
   const history = useHistory();
 
+  const genderValidate = () => {
+    if (gender === "성별을 선택해 주세요.") {
+      setIsGender(false);
+      return;
+    } else setIsGender(true);
+  };
+
   const onSubmit = async () => {
+    genderValidate();
     await axios
       .post(
         `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user`,
-        {
-          email,
-          password,
-          nickname,
-          gender,
-          dob,
-        },
-        {
-          "Content-Type": "application/json",
-        }
+        { email, password, nickname, gender, dob },
+        { "Content-Type": "application/json" }
       )
       .then((res) => {
         history.push("/welcome");
       })
       .catch((err) => {
         if (err.response.data.message === "email overlap") {
-          setEmailSignupMessage("이미 가입된 이메일입니다");
-          setIsRegistedEmail(true);
+          setIsEmail(false);
+          setEmailMessage("이미 가입된 이메일입니다.");
         } else if (err.response.data.message === "nickname overlap") {
-          setNicknameSignupMessage("이미 사용 중인 닉네임입니다");
-          setIsRegistedNickname(true);
+          setIsNickname(false);
+          setNicknameMessage("이미 사용중인 닉네임입니다.");
         } else {
           console.log(err);
         }
@@ -77,6 +75,7 @@ export default function SignUp() {
   };
 
   const onChangeNickname = (e) => {
+    setNicknameSignupMessage(false);
     const nicknameRegex = /^[가-힣A-Za-z0-9]{3,12}$/;
     const currentNickname = e.target.value;
     setNickname(currentNickname);
@@ -93,14 +92,15 @@ export default function SignUp() {
   };
 
   const onChangeEmail = (e) => {
+    setEmailSignupMessage(false);
     const emailRegex =
       /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
     const emailCurrent = e.target.value;
     setEmail(emailCurrent);
 
     if (!emailRegex.test(emailCurrent)) {
-      setEmailMessage("이메일 형식이 틀렸습니다");
       setIsEmail(false);
+      setEmailMessage("올바른 이메일 형식이 아닙니다.");
     } else {
       setEmailMessage("올바른 이메일 형식입니다");
       setIsEmail(true);
@@ -125,24 +125,18 @@ export default function SignUp() {
     }
   };
 
-  const genderValidate = () => {
-    if (gender === "성별을 선택해 주세요.") {
-      setIsGender(false);
-      return;
-    } else setIsGender(true);
-  };
-
-  const onChangeDob = (e) => {
-    const dobCurrent = e.target.value;
-    setDob(dobCurrent);
-    if (dob === undefined) {
-      setDobMessage("");
+  useEffect(() => {
+    const regDob =
+      /^(19[0-9][0-9]|20\d{2})(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/;
+    if (!regDob.test(dob)) {
+      setDobMessage("연도,월,일이 유효한지 확인해 주세요.(8자리 생년월일)");
       setIsDob(false);
     } else {
-      setDobMessage("생년월일을 선택하셨습니다");
+      setDobMessage("올바른 형식입니다.");
       setIsDob(true);
     }
-  };
+  }, [dob]);
+
   return (
     <div className="pt-10">
       <div className="ml-5 mb-10 font-medium text-xl">회원가입</div>
@@ -152,17 +146,18 @@ export default function SignUp() {
             이메일
           </span>
           <input
+            value={email}
             type="text"
             onChange={onChangeEmail}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
             placeholder="이메일을 입력하세요."
           ></input>
-          {isRegistedEmail ? (
-            <span>{emailSignupMessage}</span>
-          ) : email.length > 0 ? (
+          {email.length ? (
             <span
               className={
-                isEmail ? "text-sm text-indigo-500" : "text-sm text-red-400"
+                isEmail
+                  ? "text-sm text-VsGreen pl-2 pt-1"
+                  : "pl-2 text-sm text-VsRed pt-1"
               }
             >
               {emailMessage}
@@ -176,13 +171,15 @@ export default function SignUp() {
           <input
             type="password"
             onChange={onChangePassword}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
             placeholder="비밀번호를 입력하세요."
           ></input>
           {password.length > 0 && (
             <span
               className={
-                isPassword ? "text-sm text-indigo-500" : "text-sm text-red-400"
+                isPassword
+                  ? "pt-1 pl-2 text-sm text-VsGreen"
+                  : "pt-1 pl-2 text-sm text-VsRed"
               }
             >
               {passwordMessage}
@@ -196,15 +193,15 @@ export default function SignUp() {
           <input
             type="password"
             onChange={onChangePasswordConfirm}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
             placeholder="비밀번호 확인을 입력하세요."
           ></input>
           {passwordConfirm.length > 0 && (
             <span
               className={
                 isPasswordConfirm
-                  ? "text-sm text-indigo-500"
-                  : "text-sm text-red-400"
+                  ? "pt-1 pl-2 text-sm text-VsGreen"
+                  : "pt-1 pl-2 text-sm text-VsRed"
               }
             >
               {passwordConfirmMessage}
@@ -218,15 +215,15 @@ export default function SignUp() {
           <input
             type="text"
             onChange={onChangeNickname}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
             placeholder="닉네임을 입력하세요."
           ></input>
-          {isRegistedNickname ? (
-            <span>{nicknameSignupMessage}</span>
-          ) : nickname.length > 0 ? (
+          {nickname.length > 0 ? (
             <span
               className={
-                isNickname ? "text-sm text-indigo-500" : "text-sm text-red-400"
+                isNickname
+                  ? "pt-1 pl-2 text-sm text-VsGreen"
+                  : "pt-1 pl-2 text-sm text-VsRed"
               }
             >
               {nicknameMessage}
@@ -244,7 +241,7 @@ export default function SignUp() {
               type="button"
               className={
                 gender === "성별을 선택해 주세요."
-                  ? "inline-flex w-full justify-between rounded-[8px] border border-[#D3D3D3] px-4 py-[14px] bg-white text-sm font-normal text-[#7A7A7A] focus:outline-none focus:border-[3px] focus:border-VsGreen"
+                  ? "inline-flex w-full justify-between rounded-[8px] border border-[#D3D3D3] px-4 py-[14px] bg-white text-sm font-normal text-[#D3D3D3] focus:outline-none focus:border-[3px] focus:border-VsGreen"
                   : "inline-flex w-full justify-between rounded-[8px] border border-[#D3D3D3] px-4 py-[14px] bg-white text-sm font-normal text-black focus:outline-none focus:border-[3px] focus:border-VsGreen"
               }
             >
@@ -314,10 +311,22 @@ export default function SignUp() {
           </span>
           <input
             type="text"
-            onChange={onChangeDob}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 text-graytypo font-normal focus:outline-VsGreen"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
             placeholder="생년월일 8자리를 입력하세요."
-          ></input>
+          />
+          {dob.length ? (
+            <span
+              className={
+                dobMessage === "올바른 형식입니다."
+                  ? "pt-1 pl-2 text-sm text-VsGreen"
+                  : "pt-1 pl-2 text-sm text-VsRed"
+              }
+            >
+              {dobMessage}
+            </span>
+          ) : null}
         </div>
 
         <button
@@ -332,7 +341,9 @@ export default function SignUp() {
             )
           }
           onClick={onSubmit}
-          className="bg-VsGreen rounded-[24px] w-full h-11 text-xl font-medium"
+          className={
+            "bg-VsGreen rounded-[24px] w-full h-11 text-xl font-medium disabled:bg-VsGreenLight disabled:text-[#D3D3D3]"
+          }
         >
           회원가입 완료
         </button>
