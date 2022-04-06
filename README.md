@@ -41,7 +41,7 @@ Enjoy Coding, Upgrade together.
 |:-----------:|:-----------:|:-----------:|:-----------:|
 | ![hulk](https://user-images.githubusercontent.com/66931635/161848777-17c6c255-3eb2-4bb0-a24d-b6dbefd99bf3.png) | ![strange](https://user-images.githubusercontent.com/66931635/161849438-36c02e26-e098-4899-bf03-66dcc687b09b.png) | ![spiderman](https://user-images.githubusercontent.com/66931635/161849454-a2fee3ca-1660-44f7-ad09-74a099dc256b.png) | ![wanda](https://user-images.githubusercontent.com/66931635/161849467-a8ebf895-8261-413b-92db-0204c0fb1385.png) |
 | 태현 | 종환 | 민욱 | 예은 |
-| [Taero-Kim](https://github.com/Taero-Kim) | [jonghwan](https://github.com/jonghwan-code) | [minug0226](https://github.com/minug0226) | [yedol22](https://github.com/yedoll22) |
+| [Taero-Kim](https://github.com/Taero-Kim) | [jonghwan](https://github.com/jonghwan-code) | [minug0226](https://github.com/minug0226) | [yedoll22](https://github.com/yedoll22) |
 | Full Stack | Full Stack | Full Stack | Full Stack |
 
 👉 [More Info about our project.](https://github.com/codestates/vote-slug/wiki)
