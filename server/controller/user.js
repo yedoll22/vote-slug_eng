@@ -65,10 +65,11 @@ module.exports = {
 
   patch: async (req, res) => {
     const userId = req.userId;
+    console.log(userId);
     const { password, newPassword, nickname } = req.body;
     try {
-      const userInfo = await User.findOne({ id: userId });
-      console.log(userInfo);
+      const userInfo = await User.findOne({ where: { id: userId } });
+      console.log("----userInfo----", userInfo.nickname);
       const hashedPassword = userInfo.password;
       const match = await bcrypt.compare(password, hashedPassword);
       // 유저가 입력한 패스워드 검증
