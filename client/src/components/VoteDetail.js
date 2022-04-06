@@ -180,7 +180,25 @@ export default function VoteDetail() {
         <div className="pt-6 px-5 mb-2">
           <div className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent">
             <div className="flex justify-between mb-4">
-              <div className="text-graytypo text-[14px] font-normal">
+              <div className="text-graytypo text-[14px] font-normal flex">
+                {voteData.Category?.categoryTitle === "음식" && (
+                  <div className="mr-3">🍔</div>
+                )}
+                {voteData.Category?.categoryTitle === "연애" && (
+                  <div className="mr-3">💌</div>
+                )}
+                {voteData.Category?.categoryTitle === "여행" && (
+                  <div className="mr-3">🛩</div>
+                )}
+                {voteData.Category?.categoryTitle === "일상" && (
+                  <div className="mr-3">😌</div>
+                )}
+                {voteData.Category?.categoryTitle === "패션" && (
+                  <div className="mr-3">👬</div>
+                )}
+                {voteData.Category?.categoryTitle === "etc" && (
+                  <div className="mr-3">🎸</div>
+                )}
                 {voteData.Category?.categoryTitle}
               </div>
               {/* 

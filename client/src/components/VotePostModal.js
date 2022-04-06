@@ -1,6 +1,4 @@
-import { useHistory } from "react-router-dom";
 const VotePostModal = ({ setShowModal, voteParticipateHandler, voteId }) => {
-  const history = useHistory();
   return (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
