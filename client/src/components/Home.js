@@ -2,17 +2,22 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import LoginNeedModal from "./LoginNeedModal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setVoteFilter } from "../slice/voteFilterSlice";
 
 axios.defaults.withCredentials = true;
 
 export default function Home({ category }) {
+  const dispatch = useDispatch();
+
   const accessToken = useSelector((state) => state.accessToken.value);
   const isLogin = useSelector((state) => state.isLogin.value);
   const postModal = useSelector((state) => state.postModal.value);
   const [voteInfo, setVoteInfo] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [voteFilter, setVoteFilter] = useState("latest");
+
+  const voteFilter = useSelector((state) => state.voteFilter.value);
+  // const [voteFilter, setVoteFilter] = useState("latest");
   const [categoryFilter, setCategoryFilter] = useState("전체");
   const [categoryId, setCategoryId] = useState(1);
 
@@ -287,20 +292,20 @@ export default function Home({ category }) {
         <div className="grid grid-cols-3">
           <button
             onClick={() => {
-              setVoteFilter("latest");
+              dispatch(setVoteFilter("latest"));
             }}
             className={voteFilterClass("latest")}
           >
             최신 투표
           </button>
           <button
-            onClick={() => setVoteFilter("participated")}
+            onClick={() => dispatch(setVoteFilter("participated"))}
             className={voteFilterClass("participated")}
           >
             내가 참여한 투표
           </button>
           <button
-            onClick={() => setVoteFilter("posted")}
+            onClick={() => dispatch(setVoteFilter("posted"))}
             className={voteFilterClass("posted")}
           >
             내가 만든 투표
