@@ -63,8 +63,8 @@ export default function Mypage() {
         </div>
 
         <div className="flex px-5 text-graytypo text-[14px] font-normal mb-[39px]">
-          <div className="mr-4">만든 투표 : 123,123</div>
-          <div>참여한 투표 : 123,123</div>
+          {/* <div className="mr-4">만든 투표 : 123,123</div>
+          <div>참여한 투표 : 123,123</div> */}
         </div>
 
         <div className="px-5 text-base font-normal mb-2">회원 정보</div>

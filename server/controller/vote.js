@@ -1,5 +1,11 @@
 const jwt = require("jsonwebtoken");
-const { User, Vote, Category, User_vote } = require("../database/models");
+const {
+  User,
+  Vote,
+  Category,
+  User_vote,
+  Comment,
+} = require("../database/models");
 
 module.exports = {
   get: async (req, res) => {
@@ -95,6 +101,88 @@ module.exports = {
     }
   },
 
+  getComment: async (req, res) => {
+    const { authorization } = req.headers;
+    const { voteId } = req.params;
+    try {
+      const findComment = await Comment.findAll({
+        where: { voteId },
+        attributes: [
+          "id",
+          "content",
+          "createdAt",
+          "updatedAt",
+          "userId",
+          "User.nickname",
+        ],
+        include: [{ model: User, attributes: ["nickname"] }],
+      });
+
+      const commentList = findComment.map((comment) => {
+        return {
+          id: comment.id,
+          content: comment.content,
+          createdAt: comment.createdAt,
+          updatedAt: comment.updatedAt,
+          userId: comment.userId,
+          nickname: comment.User.nickname,
+          isMine: false,
+        };
+      });
+
+      if (authorization) {
+        const accessToken = authorization.split(" ")[1];
+        const userData = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+        const userId = userData.id;
+
+        const commentList = findComment.map((comment) => {
+          if (comment.userId === userId)
+            return {
+              id: comment.id,
+              content: comment.content,
+              createdAt: comment.createdAt,
+              updatedAt: comment.updatedAt,
+              userId: comment.userId,
+              nickname: comment.User.nickname,
+              isMine: true,
+            };
+          else
+            return {
+              id: comment.id,
+              content: comment.content,
+              createdAt: comment.createdAt,
+              updatedAt: comment.updatedAt,
+              userId: comment.userId,
+              nickname: comment.User.nickname,
+              isMine: false,
+            };
+        });
+
+        return res.status(200).json(commentList);
+      }
+
+      return res.status(200).json(commentList);
+    } catch (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+  },
+
+  getCommentById: async (req, res) => {
+    const { commentId } = req.params;
+    try {
+      const findComment = await Comment.findByPk(commentId, {
+        attributes: ["content"],
+      });
+      const { content } = findComment;
+
+      return res.status(200).json({ content });
+    } catch (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+  },
+
   post: async (req, res) => {
     // userId 필요
     const userId = req.userId;
@@ -107,6 +195,24 @@ module.exports = {
         categoryId,
         voteOption1,
         voteOption2,
+      });
+      return res.sendStatus(201);
+    } catch (err) {
+      console.log(err);
+      return res.sendStatus(500);
+    }
+  },
+
+  postComment: async (req, res) => {
+    // userId 필요
+    const userId = req.userId;
+    const { content, voteId } = req.body;
+
+    try {
+      await Comment.create({
+        userId,
+        content,
+        voteId,
       });
       return res.sendStatus(201);
     } catch (err) {
@@ -185,12 +291,36 @@ module.exports = {
     }
   },
 
+  patchComment: async (req, res) => {
+    const { content, commentId } = req.body;
+    console.log(commentId);
+    try {
+      await Comment.update({ content }, { where: { id: commentId } });
+      return res.sendStatus(200);
+    } catch (err) {
+      return res.sendStatus(500);
+    }
+  },
+
   delete: async (req, res) => {
     const { voteId } = req.params;
 
     try {
       await Vote.destroy({
         where: { id: voteId },
+      });
+      return res.status(200).json({ message: "deleted" });
+    } catch (err) {
+      return res.sendStatus(500);
+    }
+  },
+
+  deleteComment: async (req, res) => {
+    const { commentId } = req.params;
+
+    try {
+      await Comment.destroy({
+        where: { id: commentId },
       });
       return res.status(200).json({ message: "deleted" });
     } catch (err) {
