@@ -283,7 +283,7 @@ module.exports = {
     try {
       await User.destroy({ where: { id: userId } });
       res.clearCookie("refreshToken");
-      return res.status(200).redirect("/");
+      return res.sendStatus(200);
     } catch (err) {
       return res.sendStatus(500);
     }
