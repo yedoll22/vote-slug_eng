@@ -81,7 +81,7 @@ export default function Home({ category }) {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
         )
-        .then((res) => setVoteInfo(res.data.result))
+        .then((res) => setVoteInfo(res.data.participatedVoteList))
         .catch((err) => {
           console.log(err);
           if (err.response.status === 403 || err.response.status === 404) {
@@ -104,7 +104,7 @@ export default function Home({ category }) {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
         )
-        .then((res) => setVoteInfo(res.data.result))
+        .then((res) => setVoteInfo(res.data.participatedVoteList))
         .catch((err) => {
           if (err.response.status === 403 || err.response.status === 404) {
             dispatch(displayModal());
@@ -206,29 +206,31 @@ export default function Home({ category }) {
           </div>
         </div>
         <div className="h-2 w-full bg-[#f2f2f2]"></div>
-        <div className="grid grid-cols-3">
-          <button
-            onClick={() => {
-              dispatch(setVoteFilter("latest"));
-            }}
-            className={voteFilterClass("latest")}
-          >
-            최신 투표
-          </button>
-          <button
-            onClick={() => {
-              dispatch(setVoteFilter("participated"));
-            }}
-            className={voteFilterClass("participated")}
-          >
-            내가 참여한 투표
-          </button>
-          <button
-            onClick={() => dispatch(setVoteFilter("posted"))}
-            className={voteFilterClass("posted")}
-          >
-            내가 만든 투표
-          </button>
+        <div>
+          <div className="grid grid-cols-3">
+            <button
+              onClick={() => {
+                dispatch(setVoteFilter("latest"));
+              }}
+              className={voteFilterClass("latest")}
+            >
+              최신 투표
+            </button>
+            <button
+              onClick={() => {
+                dispatch(setVoteFilter("participated"));
+              }}
+              className={voteFilterClass("participated")}
+            >
+              내가 참여한 투표
+            </button>
+            <button
+              onClick={() => dispatch(setVoteFilter("posted"))}
+              className={voteFilterClass("posted")}
+            >
+              내가 만든 투표
+            </button>
+          </div>
         </div>
       </div>
 
@@ -258,8 +260,13 @@ export default function Home({ category }) {
         </div>
       </div>
 
+      {voteFilter === "latest" ? (
+        <div className="text-center text-[14px] pt-6 font-normal">
+          Tip : 투표에 참여하면 결과를 확인할 수 있어요!
+        </div>
+      ) : null}
       {voteInfo ? (
-        <div className="pt-10 px-5 pb-10">
+        <div className="pt-6 px-5 pb-10">
           {voteInfo
             .sort((a, b) => b.id - a.id)
             .map((vote, idx) => (

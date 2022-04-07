@@ -11,9 +11,10 @@ const CommentPost = () => {
   const [content, setContent] = useState("");
   const accessToken = useSelector((state) => state.accessToken.value);
   const commentId = history.location.search.split("=")[1];
+  const modify = history.location.search.split("&")[1] || null;
 
   useEffect(() => {
-    getOriginComment();
+    if (modify) getOriginComment();
   }, []);
 
   const getOriginComment = async () => {
@@ -33,6 +34,20 @@ const CommentPost = () => {
       await axios.post(
         `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment`,
         { content, voteId },
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+
+      history.goBack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const patchComment = async () => {
+    try {
+      await axios.patch(
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment`,
+        { content, commentId },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
@@ -65,7 +80,10 @@ const CommentPost = () => {
             취소
           </button>
           <button
-            onClick={postComment}
+            onClick={() => {
+              if (modify) patchComment();
+              else postComment();
+            }}
             className="w-[100px] h-full rounded-lg font-medium text-sm bg-VsGreen"
           >
             작성하기

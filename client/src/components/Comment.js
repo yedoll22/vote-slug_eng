@@ -69,10 +69,12 @@ const Comment = ({ voteId }) => {
                     {comment.content}
                   </div>
                   {comment.isMine && (
-                    <div className="flex text-[10px]">
+                    <div className="flex text-[12px]">
                       <div
                         onClick={() =>
-                          history.push(`/comment/${voteId}?id=${comment.id}`)
+                          history.push(
+                            `/comment/${voteId}?id=${comment.id}&type=modify`
+                          )
                         }
                         className="px-1 cursor-pointer hover:text-VsGreen"
                       >
