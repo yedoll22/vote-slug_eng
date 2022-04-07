@@ -48,7 +48,7 @@ const Comment = ({ voteId }) => {
 
         {commentList.map((comment) => {
           return (
-            <>
+            <div>
               <div
                 key={comment.id}
                 className="px-5 py-4 border-t last:border-b"
@@ -91,7 +91,7 @@ const Comment = ({ voteId }) => {
                   )}
                 </div>
               </div>
-            </>
+            </div>
           );
         })}
       </div>
