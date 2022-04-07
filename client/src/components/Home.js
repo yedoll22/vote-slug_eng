@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-import LoginNeedModal from "./LoginNeedModal";
+// import LoginNeedModal from "./LoginNeedModal";
 import { useDispatch, useSelector } from "react-redux";
 import { setVoteFilter } from "../slice/voteFilterSlice";
+import { displayModal } from "../slice/modalSlice";
+import Modal from "./Modal";
 
 axios.defaults.withCredentials = true;
 
 export default function Home({ category }) {
   const dispatch = useDispatch();
 
+  const modal = useSelector((state) => state.modal.value);
   const accessToken = useSelector((state) => state.accessToken.value);
   const isLogin = useSelector((state) => state.isLogin.value);
   const postModal = useSelector((state) => state.postModal.value);
   const [voteInfo, setVoteInfo] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
   const voteFilter = useSelector((state) => state.voteFilter.value);
   // const [voteFilter, setVoteFilter] = useState("latest");
@@ -22,7 +25,19 @@ export default function Home({ category }) {
   const [categoryId, setCategoryId] = useState(1);
 
   const voteFilterClass = (filter) => {
-    if (voteFilter === filter)
+    if (voteFilter === "participated" && filter === "latest" && !isLogin)
+      return "cursor-pointer py-4 font-medium text-[#222222] border-b-[2px] border-VsGreen";
+    else if (voteFilter === "posted" && filter === "latest" && !isLogin)
+      return "cursor-pointer py-4 font-medium text-[#222222] border-b-[2px] border-VsGreen";
+    else if (
+      voteFilter === "participated" &&
+      filter === "participated" &&
+      !isLogin
+    )
+      return "cursor-pointer py-4 font-medium text-graytypo";
+    else if (voteFilter === "posted" && filter === "posted" && !isLogin)
+      return "cursor-pointer py-4 font-medium text-graytypo";
+    else if (voteFilter === filter)
       return "cursor-pointer py-4 font-medium text-[#222222] border-b-[2px] border-VsGreen";
     return "py-4 font-medium text-graytypo cursor-pointer";
   };
@@ -35,8 +50,6 @@ export default function Home({ category }) {
   const history = useHistory();
 
   const voteListHandler = async () => {
-    // 투표목록을 불러와야함.
-
     // CASE1 전체 리스트 불러오기 (categoryId: "1", voteFilter: "latest")
     if (categoryId === 1 && voteFilter === "latest") {
       await axios
@@ -71,7 +84,8 @@ export default function Home({ category }) {
         .then((res) => setVoteInfo(res.data.result))
         .catch((err) => {
           if (err.response.status === 403 || err.response.status === 404) {
-            setShowModal(true);
+            dispatch(displayModal());
+            dispatch(setVoteFilter("latest"));
           } else if (err.response.status === 401) {
             history.push("/login");
           } else {
@@ -92,7 +106,8 @@ export default function Home({ category }) {
         .then((res) => setVoteInfo(res.data.result))
         .catch((err) => {
           if (err.response.status === 403 || err.response.status === 404) {
-            setShowModal(true);
+            dispatch(displayModal());
+            dispatch(setVoteFilter("latest"));
           } else if (err.response.status === 401) {
             history.push("/login");
           } else {
@@ -113,7 +128,8 @@ export default function Home({ category }) {
         .then((res) => setVoteInfo(res.data.createdVoteList))
         .catch((err) => {
           if (err.response.status === 403 || err.response.status === 404) {
-            setShowModal(true);
+            dispatch(displayModal());
+            dispatch(setVoteFilter("latest"));
           } else if (err.response.status === 401) {
             history.push("/login");
           } else {
@@ -136,7 +152,8 @@ export default function Home({ category }) {
         })
         .catch((err) => {
           if (err.response.status === 403 || err.response.status === 404) {
-            setShowModal(true);
+            dispatch(displayModal());
+            dispatch(setVoteFilter("latest"));
           } else if (err.response.status === 401) {
             history.push("/login");
           } else {
@@ -156,13 +173,14 @@ export default function Home({ category }) {
         <div className="bg-white z-20 flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
           <img src="images/vslogo.svg" alt="voteslug-logo"></img>
           <img
+            className="cursor-pointer"
             onClick={() => {
               if (isLogin) history.push("/mypage");
-              else setShowModal(true);
+              else dispatch(displayModal());
             }}
             src="images/mypage.svg"
             alt="mypage"
-          ></img>
+          />
         </div>
         <div className="sticky  pl-5 pr-[14px] py-2">
           <div className="font-normal text-[14px] text-black mb-2">
@@ -197,7 +215,9 @@ export default function Home({ category }) {
             최신 투표
           </button>
           <button
-            onClick={() => dispatch(setVoteFilter("participated"))}
+            onClick={() => {
+              dispatch(setVoteFilter("participated"));
+            }}
             className={voteFilterClass("participated")}
           >
             내가 참여한 투표
@@ -228,7 +248,7 @@ export default function Home({ category }) {
       <div
         onClick={() => {
           if (isLogin) history.push("/votepost");
-          else setShowModal(true);
+          else dispatch(displayModal());
         }}
         className="sticky z-50 top-[92%] ml-[84%] h-0 cursor-pointer"
       >
@@ -244,7 +264,7 @@ export default function Home({ category }) {
             <div
               onClick={() => history.push(`/vote/${vote.id}`)}
               key={idx}
-              className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent overflow-x-auto mb-10 last:mb-0"
+              className="cursor-pointer hover:border-2 hover:border-VsGreen py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent overflow-x-auto mb-10 last:mb-0"
             >
               <div className="flex justify-between mb-4">
                 <div className="flex text-graytypo text-[14px] font-normal">
@@ -300,10 +320,13 @@ export default function Home({ category }) {
           ))}
       </div>
 
-      {showModal && (
-        <div className="z-50">
-          <LoginNeedModal setShowModal={setShowModal} />
-        </div>
+      {modal && (
+        <Modal
+          type="login"
+          title="로그인이 필요합니다."
+          left="닫기"
+          right="로그인"
+        />
       )}
     </div>
   );

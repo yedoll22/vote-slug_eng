@@ -1,16 +1,16 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import SecessionModal from "./SecessionModal";
-import { removeAccessToken } from "../slice/accessTokenSlice";
-import { logoutHandler } from "../slice/isLoginSlice";
+import { useSelector } from "react-redux";
+import Modal from "./Modal";
+
 export default function Mypage() {
   const history = useHistory();
   const accessToken = useSelector((state) => state.accessToken.value);
-  const dispatch = useDispatch();
   const [userInfo, setUserInfo] = useState({});
-  const [showModal, setShowModal] = useState(false);
+  const [isLogoutAction, setIsLogoutAction] = useState(false);
+  const [isSecessionAction, setIsSecessionAction] = useState(false);
+
   useEffect(() => {
     getUserInfo();
   }, []);
@@ -39,48 +39,11 @@ export default function Mypage() {
       });
   };
 
-  const logoutUser = async () => {
-    await axios
-      .post(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/logout`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        dispatch(removeAccessToken());
-        dispatch(logoutHandler());
-        history.push("/login");
-      });
-  };
-
-  const deleteUserInfo = async () => {
-    await axios
-      .delete(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          history.push("/home");
-        } else if (res.status === 500) {
-          // 500일경우서버네트워크문제라고알려주기
-        } else {
-          history.push("/login");
-        }
-      });
-  };
-
   return (
     <>
       <div className="flex py-[19px] px-5">
         <img
-          onClick={() => {
-            history.goBack();
-          }}
+          onClick={() => history.goBack()}
           className="mr-2 cursor-pointer"
           src="images/go-back-arrow.svg"
           alt=""
@@ -92,7 +55,7 @@ export default function Mypage() {
         <div className="px-5 flex justify-between items-center mb-2">
           <div className="text-[20px] font-medium">{userInfo.nickname}</div>
           <div
-            onClick={logoutUser}
+            onClick={() => setIsLogoutAction(true)}
             className="cursor-pointer text-[14px] font-medium text-graytypo"
           >
             로그아웃
@@ -173,18 +136,29 @@ export default function Mypage() {
         </div>
 
         <div
-          onClick={() => {
-            setShowModal(true);
-          }}
+          onClick={() => setIsSecessionAction(true)}
           className="text-center text-graytypo font-normal cursor-pointer hover:text-VsRed"
         >
           보트 슬러그 탈퇴를 원하시나요?
         </div>
       </div>
-      {showModal && (
-        <SecessionModal
-          setShowModal={setShowModal}
-          deleteUserInfo={deleteUserInfo}
+
+      {isLogoutAction && (
+        <Modal
+          type="logout"
+          title="정말 로그아웃하시겠습니까?"
+          left="취소"
+          right="로그아웃"
+          setIsLogoutAction={setIsLogoutAction}
+        />
+      )}
+      {isSecessionAction && (
+        <Modal
+          type="secession"
+          title="정말 탈퇴하시겠습니까?"
+          left="취소"
+          right="확인"
+          setIsSecessionAction={setIsSecessionAction}
         />
       )}
     </>

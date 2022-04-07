@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const postModalSlice = createSlice({
-  name: "postModal",
+export const modalSlice = createSlice({
+  name: "modal",
   initialState: {
     value: false,
   },
@@ -15,6 +15,6 @@ export const postModalSlice = createSlice({
   },
 });
 
-export const { displayModal, hideModal } = postModalSlice.actions;
+export const { displayModal, hideModal } = modalSlice.actions;
 
-export default postModalSlice.reducer;
+export default modalSlice.reducer;
