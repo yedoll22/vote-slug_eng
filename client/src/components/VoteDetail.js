@@ -1,41 +1,73 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import VotePostModal from "./VotePostModal";
-import { useSelector } from "react-redux";
-import LoggedinModal from "./LoggedinModal";
-import DeleteModal from "./DeleteModal";
+import { useDispatch, useSelector } from "react-redux";
+import { displayModal } from "../slice/modalSlice";
+import Modal from "./Modal";
+
 axios.defaults.withCredentials = true;
 
 export default function VoteDetail() {
+  const dispatch = useDispatch();
+  const modal = useSelector((state) => state.modal.value);
+  const [modalProps, setModalProps] = useState({
+    title: "",
+    left: "",
+    right: "",
+    type: "",
+  });
+
+  const isLogin = useSelector((state) => state.isLogin.value);
+  const accessToken = useSelector((state) => state.accessToken.value);
+  const voteFilter = useSelector((state) => state.voteFilter.value);
+
+  const [deleteAction, setDeleteAction] = useState(false);
   const [voteData, setVoteData] = useState({});
   const [postData, setPostData] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [participation, setParticipation] = useState(false);
   const [option1Percent, setOption1Percent] = useState(null);
   const [option2Percent, setOption2Percent] = useState(null);
 
   const history = useHistory();
   const { voteId } = useParams();
-  const accessToken = useSelector((state) => state.accessToken.value);
-  const isLogin = useSelector((state) => state.isLogin.value);
-  const voteFilter = useSelector((state) => state.voteFilter.value);
 
-  const deleteVoteHandler = async () => {
-    try {
-      await axios.delete(
-        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/${voteId}`,
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
-      history.push("/");
-    } catch (err) {
-      const status = err.response.status;
-      if (status === 401 || status === 403 || status === 404) {
-        history.push("/");
-      }
-    }
-  };
+  useEffect(() => {
+    // 로그인 된 유저가 자기가 생성한 투표의 삭제버튼을 누른 경우 경우 모달
+    if (isLogin && deleteAction)
+      setModalProps({
+        ...modalProps,
+        type: "delete",
+        title: "정말 해당 투표를 삭제하시겠습니까?",
+        left: "닫기",
+      });
+    // 로그인이 된 유저가 참여를 한 상태인데, 투표 항목을 선택할 경우 모달
+    else if (isLogin && participation && !deleteAction)
+      setModalProps({
+        ...modalProps,
+        type: "alreadyVote",
+        title: "이미 참여한 투표입니다.",
+        left: null,
+        right: "확인",
+      });
+    // 로그인이 된 유저가 참여를 하지 않은 상태에서, 투표에 참여하고 싶은 경우
+    else if (isLogin && !participation)
+      setModalProps({
+        ...modalProps,
+        type: "participateVote",
+        title: "해당 항목에 투표하시겠습니까?",
+        left: "닫기",
+        right: "확인",
+      });
+    // 로그인이 되지 않은 경우
+    else if (!isLogin && !participation)
+      setModalProps({
+        ...modalProps,
+        type: "login",
+        title: "투표에 참여하려면 로그인이 필요합니다.",
+        left: "닫기",
+        right: "로그인",
+      });
+  }, [isLogin, participation, deleteAction]);
 
   const voteInfoHandler = async () => {
     if (isLogin) {
@@ -105,37 +137,14 @@ export default function VoteDetail() {
         });
     }
   };
+
   useEffect(() => {
     voteInfoHandler();
   }, [participation]);
 
   const postDataHandler = (key) => () => {
     setPostData({ voteId: voteId, [key]: true });
-    setShowModal(true);
-  };
-  const voteParticipateHandler = async () => {
-    await axios
-      .patch(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote`, postData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((result) => {
-        setVoteData(result.data);
-        setParticipation(true);
-      })
-      .catch((err) => {
-        if (
-          err.response.status === 401 ||
-          err.response.status === 403 ||
-          err.response.status === 404
-        ) {
-          history.push("/login");
-        } else {
-          console.log(err);
-        }
-      });
+    dispatch(displayModal());
   };
 
   const winnerClass = (optionPercent) => {
@@ -148,8 +157,9 @@ export default function VoteDetail() {
         return "break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer";
       }
     }
-    return "break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer";
+    return "hover:border-2 hover:border-VsGreen break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer";
   };
+
   return (
     <div>
       <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
@@ -167,7 +177,12 @@ export default function VoteDetail() {
         <div className="flex items-center justify-between px-5 text-xl font-medium text-[#222222]">
           <div>투표상세보기</div>
           {voteFilter === "posted" ? (
-            <div onClick={() => setShowDeleteModal(true)}>
+            <div
+              onClick={() => {
+                dispatch(displayModal());
+                setDeleteAction(true);
+              }}
+            >
               <img
                 className="w-6 cursor-pointer"
                 src="/images/delete-vote-icon.png"
@@ -200,8 +215,7 @@ export default function VoteDetail() {
                 )}
                 {voteData.Category?.categoryTitle}
               </div>
-              {/* 
-              {voteData.voteOption1Count && ( */}
+
               <div className="flex items-center">
                 <div className="pb-[0.5px]">
                   <img
@@ -215,7 +229,6 @@ export default function VoteDetail() {
                   {voteData.voteOption1Count + voteData.voteOption2Count}
                 </div>
               </div>
-              {/* )} */}
             </div>
 
             <div className="text-base font-normal text-black mb-4">
@@ -254,20 +267,17 @@ export default function VoteDetail() {
           항목 눌러서 투표에 참여
         </div>
       </div>
-      {showModal && (
-        <VotePostModal
-          setShowModal={setShowModal}
-          voteParticipateHandler={voteParticipateHandler}
-          voteInfoHandler={voteInfoHandler}
-        />
-      )}
-      {participation && showModal && (
-        <LoggedinModal setShowModal={setShowModal} />
-      )}
-      {showDeleteModal && (
-        <DeleteModal
-          setShowDeleteModal={setShowDeleteModal}
-          deleteVote={deleteVoteHandler}
+
+      {modal && (
+        <Modal
+          type={modalProps.type}
+          title={modalProps.title}
+          left={modalProps.left}
+          right={modalProps.right}
+          postData={postData}
+          setVoteData={setVoteData}
+          setDeleteAction={setDeleteAction}
+          setParticipation={setParticipation}
         />
       )}
     </div>
