@@ -196,7 +196,7 @@ module.exports = {
 
         return res.status(200).json({ createdVoteList });
       } else if (type === "participated" && categoryId) {
-        const participatedVoteList = await User_vote.findAll({
+        const query = await User_vote.findAll({
           where: { userId },
           attributes: [
             "voteOption1", // boolean 자기가 어디 투표했는지
@@ -224,6 +224,20 @@ module.exports = {
           ],
         });
 
+        const participatedVoteList = query.map((el) => {
+          return {
+            id: el.Vote.id,
+            voteTitle: el.Vote.voteTitle,
+            voteOption1: el.voteOption1,
+            voteOption2: el.voteOption2,
+            voteOption1Count: el.Vote.voteOption1Count,
+            voteOption2Count: el.Vote.voteOption2Count,
+            createdAt: el.Vote.createdAt,
+            Category: { categoryTitle: el.Vote.Category.categoryTitle },
+            User: { nickname: el.Vote.User.nickname },
+          };
+        });
+
         return res.status(200).json({ participatedVoteList });
       } else if (type === "posted") {
         const createdVoteList = await Vote.findAll({
@@ -247,7 +261,7 @@ module.exports = {
 
         return res.status(200).json({ createdVoteList });
       } else if (type === "participated") {
-        const participatedVoteList = await User_vote.findAll({
+        const query = await User_vote.findAll({
           where: { userId },
           attributes: [
             "voteOption1", // boolean 자기가 어디 투표했는지
@@ -268,6 +282,19 @@ module.exports = {
               ],
             },
           ],
+        });
+        const participatedVoteList = query.map((el) => {
+          return {
+            id: el.Vote.id,
+            voteTitle: el.Vote.voteTitle,
+            voteOption1: el.voteOption1,
+            voteOption2: el.voteOption2,
+            voteOption1Count: el.Vote.voteOption1Count,
+            voteOption2Count: el.Vote.voteOption2Count,
+            createdAt: el.Vote.createdAt,
+            Category: { categoryTitle: el.Vote.Category.categoryTitle },
+            User: { nickname: el.Vote.User.nickname },
+          };
         });
 
         return res.status(200).json({ participatedVoteList });

@@ -4,6 +4,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { displayModal } from "../slice/modalSlice";
 import Modal from "./Modal";
+import Comment from "./Comment";
 
 axios.defaults.withCredentials = true;
 
@@ -263,9 +264,11 @@ export default function VoteDetail() {
             </div>
           </div>
         </div>
-        <div className="flex justify-end pr-5 font-medium text-xs text-[#a7a7a7]">
+        <div className="flex justify-end pr-5 font-medium text-xs text-[#a7a7a7] mb-10">
           항목 눌러서 투표에 참여
         </div>
+
+        <Comment voteId={voteId} />
       </div>
 
       {modal && (

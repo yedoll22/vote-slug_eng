@@ -19,6 +19,13 @@ export default function Login() {
   // 유효성 검사
   const [isEmail, setIsEmail] = useState(false);
 
+  const loginButtonClass = () => {
+    if (userInfo.email.length && userInfo.password.length && isEmail)
+      return "bg-VsGreen rounded-[24px] w-full h-11 text-xl cursor-pointer font-medium";
+    else
+      return "bg-VsGreenLight text-[#D3D3D3] rounded-[24px] w-full h-11 text-xl cursor-pointer font-medium";
+  };
+
   const emailInputClass = () => {
     if (isEmail && userInfo.email.length)
       return "w-full h-[48px] rounded-[8px] border border-VsGreen pl-4 text-sm font-normal focus:outline-VsGreen";
@@ -166,7 +173,7 @@ export default function Login() {
           disabled={!(userInfo.email && userInfo.password)}
           // 로그인 버튼 비활성화 추가
           onClick={loginRequestHandler}
-          className="bg-VsGreen rounded-[24px] w-full h-11 text-xl font-medium"
+          className={loginButtonClass()}
         >
           로그인
         </button>

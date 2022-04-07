@@ -7,8 +7,9 @@ import SignUp from "./components/SignUp";
 import Mypage from "./components/Mypage";
 import Nickname from "./components/Nickname";
 import Password from "./components/Password";
-import { useSelector } from "react-redux";
+import CommentPost from "./components/CommentPost";
 import Welcome from "./components/Welcome";
+import { useSelector } from "react-redux";
 
 function App() {
   const category = [
@@ -55,6 +56,9 @@ function App() {
         </Route>
         <Route path="/welcome">
           <Welcome />
+        </Route>
+        <Route path="/comment/:voteId">
+          <CommentPost />
         </Route>
       </Switch>
     </BrowserRouter>

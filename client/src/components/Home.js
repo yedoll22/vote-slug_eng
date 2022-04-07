@@ -81,8 +81,9 @@ export default function Home({ category }) {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
         )
-        .then((res) => setVoteInfo(res.data.result))
+        .then((res) => setVoteInfo(res.data.participatedVoteList))
         .catch((err) => {
+          console.log(err);
           if (err.response.status === 403 || err.response.status === 404) {
             dispatch(displayModal());
             dispatch(setVoteFilter("latest"));
@@ -103,7 +104,7 @@ export default function Home({ category }) {
             headers: { Authorization: `Bearer ${accessToken}` },
           }
         )
-        .then((res) => setVoteInfo(res.data.result))
+        .then((res) => setVoteInfo(res.data.participatedVoteList))
         .catch((err) => {
           if (err.response.status === 403 || err.response.status === 404) {
             dispatch(displayModal());
@@ -205,29 +206,31 @@ export default function Home({ category }) {
           </div>
         </div>
         <div className="h-2 w-full bg-[#f2f2f2]"></div>
-        <div className="grid grid-cols-3">
-          <button
-            onClick={() => {
-              dispatch(setVoteFilter("latest"));
-            }}
-            className={voteFilterClass("latest")}
-          >
-            최신 투표
-          </button>
-          <button
-            onClick={() => {
-              dispatch(setVoteFilter("participated"));
-            }}
-            className={voteFilterClass("participated")}
-          >
-            내가 참여한 투표
-          </button>
-          <button
-            onClick={() => dispatch(setVoteFilter("posted"))}
-            className={voteFilterClass("posted")}
-          >
-            내가 만든 투표
-          </button>
+        <div>
+          <div className="grid grid-cols-3">
+            <button
+              onClick={() => {
+                dispatch(setVoteFilter("latest"));
+              }}
+              className={voteFilterClass("latest")}
+            >
+              최신 투표
+            </button>
+            <button
+              onClick={() => {
+                dispatch(setVoteFilter("participated"));
+              }}
+              className={voteFilterClass("participated")}
+            >
+              내가 참여한 투표
+            </button>
+            <button
+              onClick={() => dispatch(setVoteFilter("posted"))}
+              className={voteFilterClass("posted")}
+            >
+              내가 만든 투표
+            </button>
+          </div>
         </div>
       </div>
 
@@ -257,68 +260,77 @@ export default function Home({ category }) {
         </div>
       </div>
 
-      <div className="pt-10 px-5 pb-10">
-        {voteInfo
-          .sort((a, b) => b.id - a.id)
-          .map((vote, idx) => (
-            <div
-              onClick={() => history.push(`/vote/${vote.id}`)}
-              key={idx}
-              className="cursor-pointer hover:border-2 hover:border-VsGreen py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent overflow-x-auto mb-10 last:mb-0"
-            >
-              <div className="flex justify-between mb-4">
-                <div className="flex text-graytypo text-[14px] font-normal">
-                  {vote.Category?.categoryTitle === "음식" && (
-                    <div className="mr-3">🍔</div>
-                  )}
-                  {vote.Category?.categoryTitle === "연애" && (
-                    <div className="mr-3">💌</div>
-                  )}
-                  {vote.Category?.categoryTitle === "여행" && (
-                    <div className="mr-3">🛩</div>
-                  )}
-                  {vote.Category?.categoryTitle === "일상" && (
-                    <div className="mr-3">😌</div>
-                  )}
-                  {vote.Category?.categoryTitle === "패션" && (
-                    <div className="mr-3">👬</div>
-                  )}
-                  {vote.Category?.categoryTitle === "etc" && (
-                    <div className="mr-3">🎸</div>
-                  )}
-                  {vote.Category?.categoryTitle}
-                </div>
-                <div className="flex items-center">
-                  <div className="pb-[0.5px]">
-                    <img
-                      className="w-4 h-4 mr-[5px] opacity-50"
-                      src="images/view-icon.png"
-                      alt=""
-                    />
+      {voteFilter === "latest" ? (
+        <div className="text-center text-[14px] pt-6 font-normal">
+          Tip : 투표에 참여하면 결과를 확인할 수 있어요!
+        </div>
+      ) : null}
+      {voteInfo ? (
+        <div className="pt-6 px-5 pb-10">
+          {voteInfo
+            .sort((a, b) => b.id - a.id)
+            .map((vote, idx) => (
+              <div
+                onClick={() => history.push(`/vote/${vote.id}`)}
+                key={idx}
+                className="cursor-pointer hover:border-2 hover:border-VsGreen py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent overflow-x-auto mb-10 last:mb-0"
+              >
+                <div className="flex justify-between mb-4">
+                  <div className="flex text-graytypo text-[14px] font-normal">
+                    {vote.Category?.categoryTitle === "음식" && (
+                      <div className="mr-3">🍔</div>
+                    )}
+                    {vote.Category?.categoryTitle === "연애" && (
+                      <div className="mr-3">💌</div>
+                    )}
+                    {vote.Category?.categoryTitle === "여행" && (
+                      <div className="mr-3">🛩</div>
+                    )}
+                    {vote.Category?.categoryTitle === "일상" && (
+                      <div className="mr-3">😌</div>
+                    )}
+                    {vote.Category?.categoryTitle === "패션" && (
+                      <div className="mr-3">👬</div>
+                    )}
+                    {vote.Category?.categoryTitle === "etc" && (
+                      <div className="mr-3">🎸</div>
+                    )}
+                    {vote.Category?.categoryTitle}
                   </div>
+                  <div className="flex items-center">
+                    <div className="pb-[0.5px]">
+                      <img
+                        className="w-4 h-4 mr-[5px] opacity-50"
+                        src="images/view-icon.png"
+                        alt=""
+                      />
+                    </div>
 
-                  <div className="text-graytypo text-[14px] font-normal">
-                    {vote.voteOption1Count + vote.voteOption2Count}
+                    <div className="text-graytypo text-[14px] font-normal">
+                      {vote.voteOption1Count + vote.voteOption2Count}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-base font-normal text-black mb-4">
+                  {vote.voteTitle}
+                </div>
+                <div className="flex justify-center z-20">
+                  <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4">
+                    {vote.voteOption1}
+                    <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
+                      VS
+                    </div>
+                  </div>
+                  <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] z-0">
+                    {vote.voteOption2}
                   </div>
                 </div>
               </div>
-              <div className="text-base font-normal text-black mb-4">
-                {vote.voteTitle}
-              </div>
-              <div className="flex justify-center z-20">
-                <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4">
-                  {vote.voteOption1}
-                  <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
-                    VS
-                  </div>
-                </div>
-                <div className="break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] z-0">
-                  {vote.voteOption2}
-                </div>
-              </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      ) : (
+        <div className="pt-[180%]"></div>
+      )}
 
       {modal && (
         <Modal

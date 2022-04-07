@@ -19,6 +19,8 @@ const Modal = ({
   setParticipation,
   setIsLogoutAction,
   setIsSecessionAction,
+  setCommentDeleteAction,
+  commentDeleteTarget,
 }) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -61,6 +63,19 @@ const Modal = ({
     }
   };
 
+  const deleteComment = async () => {
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment/${commentDeleteTarget}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      setCommentDeleteAction(false);
+    } catch (err) {
+      const status = err.response.status;
+      if (status === 401 || status === 403 || status === 404) history.push("/");
+    }
+  };
+
   const logout = async () => {
     await axios
       .post(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/logout`, {
@@ -87,14 +102,22 @@ const Modal = ({
       })
       .then((res) => {
         dispatch(setVoteFilter("latest"));
-        if (res.status === 200) history.push("/");
-      });
+        dispatch(logoutHandler());
+        dispatch(removeAccessToken());
+        history.push("/");
+      })
+      .catch((err) => console.log(err));
   };
 
   const rightButtonClass = () => {
     if (type === "login" || type === "participateVote")
       return "border-l py-[13px] border-l-[#C4C4C4] flex-1 h-full text-VsGreen font-bold text-sm";
-    else if (type === "delete" || type === "secession" || type === "logout")
+    else if (
+      type === "delete" ||
+      type === "secession" ||
+      type === "logout" ||
+      type === "deleteComment"
+    )
       return "border-l py-[13px] border-l-[#C4C4C4] flex-1 h-full text-VsRed font-bold text-sm hover:text-white hover:bg-VsRed hover:rounded-br-lg";
   };
 
@@ -104,6 +127,7 @@ const Modal = ({
     else if (type === "secession") secession();
     else if (type === "participateVote") participateVote();
     else if (type === "logout") logout();
+    else if (type === "deleteComment") deleteComment();
   };
 
   return (
@@ -128,6 +152,7 @@ const Modal = ({
                       if (setDeleteAction) setDeleteAction(false);
                       if (setIsLogoutAction) setIsLogoutAction(false);
                       if (setIsSecessionAction) setIsSecessionAction(false);
+                      if (setCommentDeleteAction) setCommentDeleteAction(false);
                     }}
                   >
                     {left}
@@ -157,6 +182,7 @@ const Modal = ({
                       if (setDeleteAction) setDeleteAction(false);
                       if (setIsLogoutAction) setIsLogoutAction(false);
                       if (setIsSecessionAction) setIsSecessionAction(false);
+                      if (setCommentDeleteAction) setCommentDeleteAction(false);
                     }}
                   >
                     {right}

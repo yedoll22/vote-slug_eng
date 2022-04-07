@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       models.Vote.belongsTo(models.User);
       models.Vote.belongsTo(models.Category);
       models.Vote.hasMany(models.User_vote, { foreignKey: "voteId" });
+      models.Vote.hasMany(models.Comment, { foreignKey: "voteId" });
       models.Vote.belongsToMany(models.User, {
         through: "User_vote",
         targetKey: "id",
