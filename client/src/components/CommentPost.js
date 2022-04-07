@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useHistory, useParams, useLocation } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+axios.defaults.withCredentials = true;
 
 const CommentPost = () => {
   const history = useHistory();
@@ -17,7 +19,7 @@ const CommentPost = () => {
   const getOriginComment = async () => {
     try {
       const getRequest = await axios.get(
-        `http://localhost:8080/vote/comment/modify/${commentId}`,
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment/modify/${commentId}`,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setContent(getRequest.data.content);
@@ -28,8 +30,8 @@ const CommentPost = () => {
 
   const postComment = async () => {
     try {
-      const postRequest = await axios.post(
-        `http://localhost:8080/vote/comment`,
+      await axios.post(
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment`,
         { content, voteId },
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );

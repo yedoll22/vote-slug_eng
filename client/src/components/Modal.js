@@ -66,7 +66,7 @@ const Modal = ({
   const deleteComment = async () => {
     try {
       await axios.delete(
-        `http://localhost:8080/vote/comment/${commentDeleteTarget}`,
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment/${commentDeleteTarget}`,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setCommentDeleteAction(false);

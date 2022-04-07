@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Modal from "./Modal";
 
+axios.defaults.withCredentials = true;
+
 const Comment = ({ voteId }) => {
   const history = useHistory();
   const isLogin = useSelector((state) => state.isLogin.value);
@@ -15,13 +17,13 @@ const Comment = ({ voteId }) => {
   const getComment = async () => {
     if (isLogin) {
       const commentRequest = await axios.get(
-        `http://localhost:8080/vote/comment/${voteId}`,
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment/${voteId}`,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setCommentList(commentRequest.data);
     } else {
       const commentRequest = await axios.get(
-        `http://localhost:8080/vote/comment/${voteId}`
+        `${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/vote/comment/${voteId}`
       );
       setCommentList(commentRequest.data);
     }
