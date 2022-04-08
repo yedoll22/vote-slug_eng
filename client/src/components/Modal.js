@@ -21,6 +21,7 @@ const Modal = ({
   setIsSecessionAction,
   setCommentDeleteAction,
   commentDeleteTarget,
+  setCommentWriteAction,
 }) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -153,6 +154,7 @@ const Modal = ({
                       if (setIsLogoutAction) setIsLogoutAction(false);
                       if (setIsSecessionAction) setIsSecessionAction(false);
                       if (setCommentDeleteAction) setCommentDeleteAction(false);
+                      if (setCommentWriteAction) setCommentWriteAction(false);
                     }}
                   >
                     {left}
@@ -166,6 +168,7 @@ const Modal = ({
                       if (setDeleteAction) setDeleteAction(false);
                       if (setIsLogoutAction) setIsLogoutAction(false);
                       if (setIsSecessionAction) setIsSecessionAction(false);
+                      if (setCommentWriteAction) setCommentWriteAction(false);
                     }}
                   >
                     {right}

@@ -10,6 +10,7 @@ import Password from "./components/Password";
 import CommentPost from "./components/CommentPost";
 import Welcome from "./components/Welcome";
 import { useSelector } from "react-redux";
+import Token from "./components/Token";
 
 function App() {
   const category = [
@@ -25,43 +26,46 @@ function App() {
   const isLogin = useSelector((state) => state.isLogin.value);
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/">
-          {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
-        </Route>
-        <Route path="/home">
-          <Home category={category} />
-        </Route>
-        <Route path="/vote/:voteId">
-          <VoteDetail />
-        </Route>
-        <Route path="/votepost">
-          <VotePost />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/signup">
-          <SignUp />
-        </Route>
-        <Route path="/mypage">
-          <Mypage />
-        </Route>
-        <Route path="/nickname">
-          <Nickname />
-        </Route>
-        <Route path="/password">
-          <Password />
-        </Route>
-        <Route path="/welcome">
-          <Welcome />
-        </Route>
-        <Route path="/comment/:voteId">
-          <CommentPost />
-        </Route>
-      </Switch>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Token />
+        <Switch>
+          <Route exact path="/">
+            {isLogin ? <Redirect to="/home" /> : <Redirect to="/login" />}
+          </Route>
+          <Route path="/home">
+            <Home category={category} />
+          </Route>
+          <Route path="/vote/:voteId">
+            <VoteDetail />
+          </Route>
+          <Route path="/votepost">
+            <VotePost />
+          </Route>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/signup">
+            <SignUp />
+          </Route>
+          <Route path="/mypage">
+            <Mypage />
+          </Route>
+          <Route path="/nickname">
+            <Nickname />
+          </Route>
+          <Route path="/password">
+            <Password />
+          </Route>
+          <Route path="/welcome">
+            <Welcome />
+          </Route>
+          <Route path="/comment/:voteId">
+            <CommentPost />
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    </>
   );
 }
 

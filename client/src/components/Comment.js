@@ -13,6 +13,7 @@ const Comment = ({ voteId }) => {
   const [commentList, setCommentList] = useState([]);
   const [commentDeleteAction, setCommentDeleteAction] = useState(false);
   const [commentDeleteTarget, setCommentDeleteTarget] = useState(null);
+  const [commentWriteAciton, setCommentWriteAction] = useState(false);
 
   const getComment = async () => {
     if (isLogin) {
@@ -39,7 +40,10 @@ const Comment = ({ voteId }) => {
         <div className="flex justify-between pb-4 px-5">
           <div className="text-xl font-medium">코멘트</div>
           <button
-            onClick={() => history.push(`/comment/${voteId}`)}
+            onClick={() => {
+              if (isLogin) history.push(`/comment/${voteId}`);
+              else setCommentWriteAction(true);
+            }}
             className="pr-[9px] text-[#A7A7A7] text-xs font-medium hover:text-VsGreen"
           >
             작성하기
@@ -48,12 +52,9 @@ const Comment = ({ voteId }) => {
 
         {commentList.map((comment) => {
           return (
-            <div>
-              <div
-                key={comment.id}
-                className="px-5 py-4 border-t last:border-b"
-              >
-                <div className="mb-2" font-semibold text-sm>
+            <div key={comment.id}>
+              <div className="px-5 py-4 border-t-[0.5px] last:border-b">
+                <div className="mb-2 font-semibold text-sm">
                   {comment.isMine ? (
                     <div className="flex items-center">
                       <div className="mr-2">{comment.nickname}</div>
@@ -97,6 +98,7 @@ const Comment = ({ voteId }) => {
           );
         })}
       </div>
+
       {commentDeleteAction && (
         <Modal
           type="deleteComment"
@@ -105,6 +107,16 @@ const Comment = ({ voteId }) => {
           right="확인"
           setCommentDeleteAction={setCommentDeleteAction}
           commentDeleteTarget={commentDeleteTarget}
+        />
+      )}
+
+      {commentWriteAciton && (
+        <Modal
+          type="login"
+          title="로그인이 필요합니다."
+          left="닫기"
+          right="로그인"
+          setCommentWriteAction={setCommentWriteAction}
         />
       )}
     </>
