@@ -15,34 +15,52 @@ module.exports = {
       if (!authorization && !refreshToken) return res.sendStatus(401);
 
       const accessToken = authorization.split(" ")[1];
-      let userData = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-      let userInfo = await User.findOne({ where: { id: userData.id } });
+      // Case ) accessToken은 undefined refresh는 있는 상태
 
-      //accessToken과 refreshToken이 둘 다 만료된 경우 401
-      if (!userInfo && !refreshToken)
-        return res.status(401).json({ message: "token expired" });
-      // accessToken은 만료 but refreshToken은 유효한 경우 -> accessToken 재발급
-      else if (!userInfo && refreshToken) {
-        userData = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+      if (accessToken) {
+        let userData = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+        let userInfo = await User.findOne({ where: { id: userData.id } });
+
+        if (!userInfo && !refreshToken)
+          return res.status(401).json({ message: "token expired" });
+        // accessToken은 만료 but refreshToken은 유효한 경우 -> accessToken 재발급
+        else if (!userInfo && refreshToken) {
+          userData = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+          const payload = { id: userData.id };
+          const newAccessToken = jwt.sign(payload, process.env.JWT_ACCESS_KEY, {
+            expiresIn: "1d",
+          });
+          return res.status(200).json({ newAccessToken });
+        }
+        // accessToken은 유효 but refreshToken은 만료된 경우 -> refreshToken 재발급 후 쿠키 설정
+        else if (userInfo && !refreshToken) {
+          const payload = { id: userData.id };
+          const newRefreshToken = jwt.sign(
+            payload,
+            process.env.JWT_REFRESH_KEY,
+            {
+              expiresIn: "30d",
+            }
+          );
+
+          return res.status(200).cookie("refreshToken", newRefreshToken, {
+            sameSite: "Lax",
+            // secure: true,
+            httpOnly: true,
+          });
+        }
+      } else if (!accessToken) {
+        const userData = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
         const payload = { id: userData.id };
         const newAccessToken = jwt.sign(payload, process.env.JWT_ACCESS_KEY, {
           expiresIn: "1d",
         });
         return res.status(200).json({ newAccessToken });
       }
-      // accessToken은 유효 but refreshToken은 만료된 경우 -> refreshToken 재발급 후 쿠키 설정
-      else if (userInfo && !refreshToken) {
-        const payload = { id: userData.id };
-        const newRefreshToken = jwt.sign(payload, process.env.JWT_REFRESH_KEY, {
-          expiresIn: "30d",
-        });
+      // accessToken이 없는경우에는 userInfo이 null값.
 
-        return res.status(200).cookie("refreshToken", newRefreshToken, {
-          sameSite: "Lax",
-          // secure: true,
-          httpOnly: true,
-        });
-      }
+      //accessToken과 refreshToken이 둘 다 만료된 경우 401
+
       // 그 외의 경우 (accessToken과 refreshToken 둘 다 유효한 경우)
       return res.sendStatus(200);
     } catch (err) {

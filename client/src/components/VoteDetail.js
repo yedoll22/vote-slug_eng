@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { displayModal } from "../slice/modalSlice";
 import Modal from "./Modal";
 import Comment from "./Comment";
+import Token from "./Token";
 
 axios.defaults.withCredentials = true;
 
@@ -162,127 +163,129 @@ export default function VoteDetail() {
   };
 
   return (
-    <div>
-      <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
-        <img
-          onClick={() => {
-            history.goBack();
-          }}
-          src="/images/go-back-arrow.svg"
-          className="mr-2 cursor-pointer"
-          alt="gobackarrow"
-        ></img>
-        <img src="/images/vslogo.svg" alt="vslogo"></img>
-      </div>
-      <div className="pt-6">
-        <div className="flex items-center justify-between px-5 text-xl font-medium text-[#222222]">
-          <div>투표상세보기</div>
-          {voteFilter === "posted" ? (
-            <div
-              onClick={() => {
-                dispatch(displayModal());
-                setDeleteAction(true);
-              }}
-            >
-              <img
-                className="w-6 cursor-pointer"
-                src="/images/delete-vote-icon.png"
-                alt=""
-              />
-            </div>
-          ) : null}
+    <>
+      <div>
+        <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
+          <img
+            onClick={() => {
+              history.goBack();
+            }}
+            src="/images/go-back-arrow.svg"
+            className="mr-2 cursor-pointer"
+            alt="gobackarrow"
+          ></img>
+          <img src="/images/vslogo.svg" alt="vslogo"></img>
         </div>
-        <div className="pt-6 px-5 mb-2">
-          <div className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent">
-            <div className="flex justify-between mb-4">
-              <div className="text-graytypo text-[14px] font-normal flex">
-                {voteData.Category?.categoryTitle === "음식" && (
-                  <div className="mr-3">🍔</div>
-                )}
-                {voteData.Category?.categoryTitle === "연애" && (
-                  <div className="mr-3">💌</div>
-                )}
-                {voteData.Category?.categoryTitle === "여행" && (
-                  <div className="mr-3">🛩</div>
-                )}
-                {voteData.Category?.categoryTitle === "일상" && (
-                  <div className="mr-3">😌</div>
-                )}
-                {voteData.Category?.categoryTitle === "패션" && (
-                  <div className="mr-3">👬</div>
-                )}
-                {voteData.Category?.categoryTitle === "etc" && (
-                  <div className="mr-3">🎸</div>
-                )}
-                {voteData.Category?.categoryTitle}
+        <div className="pt-6">
+          <div className="flex items-center justify-between px-5 text-xl font-medium text-[#222222]">
+            <div>투표상세보기</div>
+            {voteFilter === "posted" ? (
+              <div
+                onClick={() => {
+                  dispatch(displayModal());
+                  setDeleteAction(true);
+                }}
+              >
+                <img
+                  className="w-6 cursor-pointer"
+                  src="/images/delete-vote-icon.png"
+                  alt=""
+                />
+              </div>
+            ) : null}
+          </div>
+          <div className="pt-6 px-5 mb-2">
+            <div className="py-4 px-4 border border-[#a7a7a7] rounded-[12px] bg-transparent">
+              <div className="flex justify-between mb-4">
+                <div className="text-graytypo text-[14px] font-normal flex">
+                  {voteData.Category?.categoryTitle === "음식" && (
+                    <div className="mr-3">🍔</div>
+                  )}
+                  {voteData.Category?.categoryTitle === "연애" && (
+                    <div className="mr-3">💌</div>
+                  )}
+                  {voteData.Category?.categoryTitle === "여행" && (
+                    <div className="mr-3">🛩</div>
+                  )}
+                  {voteData.Category?.categoryTitle === "일상" && (
+                    <div className="mr-3">😌</div>
+                  )}
+                  {voteData.Category?.categoryTitle === "패션" && (
+                    <div className="mr-3">👬</div>
+                  )}
+                  {voteData.Category?.categoryTitle === "etc" && (
+                    <div className="mr-3">🎸</div>
+                  )}
+                  {voteData.Category?.categoryTitle}
+                </div>
+
+                <div className="flex items-center">
+                  <div className="pb-[0.5px]">
+                    <img
+                      className="w-4 h-4 mr-[5px] opacity-50"
+                      src="/images/view-icon.png"
+                      alt=""
+                    />
+                  </div>
+
+                  <div className="text-graytypo text-[14px] font-normal">
+                    {voteData.voteOption1Count + voteData.voteOption2Count}
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center">
-                <div className="pb-[0.5px]">
-                  <img
-                    className="w-4 h-4 mr-[5px] opacity-50"
-                    src="/images/view-icon.png"
-                    alt=""
-                  />
-                </div>
-
-                <div className="text-graytypo text-[14px] font-normal">
-                  {voteData.voteOption1Count + voteData.voteOption2Count}
-                </div>
+              <div className="text-base font-normal text-black mb-4">
+                {voteData.voteTitle}
               </div>
-            </div>
 
-            <div className="text-base font-normal text-black mb-4">
-              {voteData.voteTitle}
-            </div>
+              <div className="flex justify-center z-20">
+                <button
+                  value={"voteOption1"}
+                  onClick={postDataHandler("voteOption1")}
+                  className={winnerClass(option1Percent)}
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="mb-2">{voteData.voteOption1}</div>
+                    {participation && <div>{option1Percent}%</div>}
+                  </div>
 
-            <div className="flex justify-center z-20">
-              <button
-                value={"voteOption1"}
-                onClick={postDataHandler("voteOption1")}
-                className={winnerClass(option1Percent)}
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <div className="mb-2">{voteData.voteOption1}</div>
-                  {participation && <div>{option1Percent}%</div>}
-                </div>
-
-                <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
-                  VS
-                </div>
-              </button>
-              <button
-                value={"voteOption2"}
-                onClick={postDataHandler("voteOption2")}
-                className={winnerClass(option2Percent)}
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <div className="mb-2">{voteData.voteOption2}</div>
-                  {participation && <div>{option2Percent}%</div>}
-                </div>
-              </button>
+                  <div className="absolute z-10 right-[-25px] top-[44px] rounded-full w-8 h-8 bg-VsRed flex justify-center items-center text-[14px] text-white font-normal border-[2px] border-white">
+                    VS
+                  </div>
+                </button>
+                <button
+                  value={"voteOption2"}
+                  onClick={postDataHandler("voteOption2")}
+                  className={winnerClass(option2Percent)}
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="mb-2">{voteData.voteOption2}</div>
+                    {participation && <div>{option2Percent}%</div>}
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-end pr-5 font-medium text-xs text-[#a7a7a7] mb-10">
-          항목 눌러서 투표에 참여
+          <div className="flex justify-end pr-5 font-medium text-xs text-[#a7a7a7] mb-10">
+            항목 눌러서 투표에 참여
+          </div>
+
+          <Comment voteId={voteId} />
         </div>
 
-        <Comment voteId={voteId} />
+        {modal && (
+          <Modal
+            type={modalProps.type}
+            title={modalProps.title}
+            left={modalProps.left}
+            right={modalProps.right}
+            postData={postData}
+            setVoteData={setVoteData}
+            setDeleteAction={setDeleteAction}
+            setParticipation={setParticipation}
+          />
+        )}
       </div>
-
-      {modal && (
-        <Modal
-          type={modalProps.type}
-          title={modalProps.title}
-          left={modalProps.left}
-          right={modalProps.right}
-          postData={postData}
-          setVoteData={setVoteData}
-          setDeleteAction={setDeleteAction}
-          setParticipation={setParticipation}
-        />
-      )}
-    </div>
+    </>
   );
 }
