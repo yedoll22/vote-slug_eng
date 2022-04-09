@@ -28,7 +28,7 @@ const Welcome = () => {
       </div>
 
       <div className="flex justify-center pl-[50px] pr-[66px] mb-[100px]">
-        <img className="w-full" src="images/vslogo-vertical.png" alt="" />
+        <img className="w-full" src="/images/vslogo-vertical.png" alt="" />
       </div>
 
       <div className="px-5">

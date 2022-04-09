@@ -253,13 +253,13 @@ export default function SignUp() {
               {dropdown ? (
                 <img
                   className="absolute right-2 top-[45px] z-10"
-                  src="images/dropdown-reverse.svg"
+                  src="/images/dropdown-reverse.svg"
                   alt="dropdown"
                 />
               ) : (
                 <img
                   className="absolute right-2 top-[45px] z-10"
-                  src="images/dropdown.svg"
+                  src="/images/dropdown.svg"
                   alt="dropdown"
                 />
               )}

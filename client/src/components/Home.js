@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-// import LoginNeedModal from "./LoginNeedModal";
 import { useDispatch, useSelector } from "react-redux";
 import { setVoteFilter } from "../slice/voteFilterSlice";
 import { displayModal } from "../slice/modalSlice";
@@ -17,10 +16,7 @@ export default function Home({ category }) {
   const isLogin = useSelector((state) => state.isLogin.value);
   const postModal = useSelector((state) => state.postModal.value);
   const [voteInfo, setVoteInfo] = useState([]);
-  // const [showModal, setShowModal] = useState(false);
-
   const voteFilter = useSelector((state) => state.voteFilter.value);
-  // const [voteFilter, setVoteFilter] = useState("latest");
   const [categoryFilter, setCategoryFilter] = useState("전체");
   const [categoryId, setCategoryId] = useState(1);
 
@@ -170,12 +166,25 @@ export default function Home({ category }) {
 
   return (
     <>
+      {/* Floating Button */}
+      <div
+        onClick={() => {
+          if (isLogin) history.push("/votepost");
+          else dispatch(displayModal());
+        }}
+        className="sticky z-50 top-[86%] ml-[77.5%] md:top-[90%] md:ml-[82%] h-0 cursor-pointer"
+      >
+        <div className="shadow-3xl bg-VsGreen w-[60px] h-[60px] rounded-full flex items-center justify-center">
+          <img className="w-8 h-8" src="/images/add-icon.png" alt="" />
+        </div>
+      </div>
+
       <div className="relative">
         <div className="sticky top-0 bg-white z-30">
           <div className="bg-white z-20 flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
             <img
               className="w-[131.39px] h-5 mt-[0.5px]"
-              src="images/vslogo-new.png"
+              src="/images/vslogo-new.png"
               alt="voteslug-logo"
             />
             <img
@@ -184,7 +193,7 @@ export default function Home({ category }) {
                 if (isLogin) history.push("/mypage");
                 else dispatch(displayModal());
               }}
-              src="images/mypage.svg"
+              src="/images/mypage.svg"
               alt="mypage"
             />
           </div>
@@ -253,17 +262,17 @@ export default function Home({ category }) {
         </div>
         {/* Post Modal */}
 
-        <div
+        {/* <div
           onClick={() => {
             if (isLogin) history.push("/votepost");
             else dispatch(displayModal());
           }}
-          className="sticky z-50 top-[92%] ml-[84%] h-0 cursor-pointer"
+          className="sticky z-50 top-[90%] ml-[80%] h-0 cursor-pointer"
         >
           <div className="shadow-3xl bg-VsGreen w-[50px] h-[50px] rounded-full flex items-center justify-center">
-            <img className="w-8 h-8" src="images/add-icon.png" alt="" />
+            <img className="w-8 h-8" src="/images/add-icon.png" alt="" />
           </div>
-        </div>
+        </div> */}
 
         {voteFilter === "latest" ? (
           <div className="text-center text-[14px] pt-6 font-normal">
@@ -306,7 +315,7 @@ export default function Home({ category }) {
                       <div className="pb-[0.5px]">
                         <img
                           className="w-4 h-4 mr-[5px] opacity-50"
-                          src="images/view-icon.png"
+                          src="/images/view-icon.png"
                           alt=""
                         />
                       </div>

@@ -83,7 +83,7 @@ export default function VotePost() {
         <div className="flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
           <img
             className="w-[131.39px] h-5 mt-[0.5px]"
-            src="images/vslogo-new.png"
+            src="/images/vslogo-new.png"
             alt="voteslug-logo"
             onClick={() => history.replace("/home")}
           />
@@ -140,13 +140,13 @@ export default function VotePost() {
                     {dropdown ? (
                       <img
                         className="absolute right-2 top-[12.5px] z-10"
-                        src="images/dropdown-reverse.svg"
+                        src="/images/dropdown-reverse.svg"
                         alt="dropdown"
                       />
                     ) : (
                       <img
                         className="absolute right-2 top-[12.5px] z-10"
-                        src="images/dropdown.svg"
+                        src="/images/dropdown.svg"
                         alt="dropdown"
                       />
                     )}
@@ -203,7 +203,7 @@ export default function VotePost() {
             </div>
           </div>
 
-          <div className="flex items-center pb-[150px]">
+          <div className="flex items-center pb-2">
             <div
               className={
                 validationError
@@ -212,7 +212,7 @@ export default function VotePost() {
               }
               role="alert"
             >
-              <div className="bg-VsRed flex items-center text-white font-medium rounded-r px-4 py-2 ">
+              <div className="bg-VsRed flex items-center text-white font-medium rounded-r px-1 py-2 ">
                 <svg
                   className="fill-current h-5 w-5 text-white mr-4"
                   xmlns="http://www.w3.org/2000/svg"
@@ -220,7 +220,7 @@ export default function VotePost() {
                 >
                   <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
                 </svg>
-                모든 항목을 입력해주세요.
+                모든 항목을 <br /> 입력해주세요.
               </div>
             </div>
 

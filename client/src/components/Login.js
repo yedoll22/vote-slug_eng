@@ -159,7 +159,7 @@ export default function Login() {
                 name="password"
                 type="password"
                 className={passwordInputClass()}
-                placeholder="비밀번호를　입력하세요."
+                placeholder="비밀번호를 입력하세요."
               ></input>
               {userInfo.password.length > 0 ? (
                 <img

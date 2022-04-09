@@ -44,12 +44,12 @@ export default function Mypage() {
         <img
           onClick={() => history.push("/home")}
           className="mr-2 cursor-pointer"
-          src="images/go-back-arrow.svg"
+          src="/images/go-back-arrow.svg"
           alt=""
         />
         <img
           className="w-[131.39px] h-5 mt-[0.5px]"
-          src="images/vslogo-new.png"
+          src="/images/vslogo-new.png"
           alt="voteslug-logo"
           onClick={() => history.push("/home")}
         />
@@ -96,7 +96,7 @@ export default function Mypage() {
               <div className="mr-3 text-VsGreen font-normal text-sm">
                 닉네임 변경
               </div>
-              <img src="images/right-arrow.svg" alt="" />
+              <img src="/images/right-arrow.svg" alt="" />
             </div>
           </div>
 
@@ -117,7 +117,7 @@ export default function Mypage() {
               <div className="mr-3 text-VsGreen font-normal text-sm">
                 비밀번호 변경
               </div>
-              <img src="images/right-arrow.svg" alt="" />
+              <img src="/images/right-arrow.svg" alt="" />
             </div>
           </div>
 

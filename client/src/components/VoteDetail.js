@@ -175,7 +175,7 @@ export default function VoteDetail() {
           ></img>
           <img
             className="w-[131.39px] h-5 mt-[0.5px]"
-            src="images/vslogo-new.png"
+            src="/images/vslogo-new.png"
             alt="voteslug-logo"
             onClick={() => history.push("/home")}
           />
