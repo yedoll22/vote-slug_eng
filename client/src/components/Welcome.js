@@ -33,7 +33,7 @@ const Welcome = () => {
 
       <div className="px-5">
         <button
-          onClick={() => history.push("/login")}
+          onClick={() => history.replace("/login")}
           className="w-full py-3 bg-VsGreen rounded-[24px] text-[20px] font-medium"
         >
           로그인 하러 가기

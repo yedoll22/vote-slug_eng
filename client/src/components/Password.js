@@ -53,10 +53,15 @@ export default function Nickname() {
             className="mr-2"
             src="/images/go-back-arrow.svg"
             alt=""
-          ></img>
-          <img src="/images/vslogo.svg" alt="" />
+          />
+          <img
+            className="w-[131.39px] h-5 mt-[0.5px]"
+            src="images/vslogo-new.png"
+            alt="voteslug-logo"
+            onClick={() => history.replace("/home")}
+          />
         </div>
-        <div className="h-2 w-full bg-[#f2f2f2]"></div>
+        <div className="h-1 w-full bg-[#f2f2f2]"></div>
         <div className="px-5 pb-6">
           <div className="mt-6 text-[#222222] text-xl font-medium mb-10">
             비밀번호 변경

@@ -42,14 +42,19 @@ export default function Mypage() {
     <>
       <div className="flex py-[19px] px-5">
         <img
-          onClick={() => history.goBack()}
+          onClick={() => history.push("/home")}
           className="mr-2 cursor-pointer"
           src="images/go-back-arrow.svg"
           alt=""
         />
-        <img src="images/vslogo.svg" alt=""></img>
+        <img
+          className="w-[131.39px] h-5 mt-[0.5px]"
+          src="images/vslogo-new.png"
+          alt="voteslug-logo"
+          onClick={() => history.push("/home")}
+        />
       </div>
-      <div className="h-2 w-full bg-[#F2F2F2]"></div>
+      <div className="h-1 w-full bg-[#F2F2F2]"></div>
       <div className="pt-6">
         <div className="px-5 flex justify-between items-center mb-2">
           <div className="text-[20px] font-medium">{userInfo.nickname}</div>

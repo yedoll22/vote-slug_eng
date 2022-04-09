@@ -173,7 +173,11 @@ export default function Home({ category }) {
       <div className="relative">
         <div className="sticky top-0 bg-white z-30">
           <div className="bg-white z-20 flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
-            <img src="images/vslogo.svg" alt="voteslug-logo"></img>
+            <img
+              className="w-[131.39px] h-5 mt-[0.5px]"
+              src="images/vslogo-new.png"
+              alt="voteslug-logo"
+            />
             <img
               className="cursor-pointer"
               onClick={() => {
@@ -206,7 +210,7 @@ export default function Home({ category }) {
               })}
             </div>
           </div>
-          <div className="h-2 w-full bg-[#f2f2f2]"></div>
+          <div className="h-1 w-full bg-[#f2f2f2]"></div>
           <div>
             <div className="grid grid-cols-3">
               <button

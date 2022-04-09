@@ -59,7 +59,7 @@ export default function SignUp() {
         { "Content-Type": "application/json" }
       )
       .then((res) => {
-        history.push("/welcome");
+        history.replace("/welcome");
       })
       .catch((err) => {
         if (err.response.data.message === "email overlap") {
@@ -138,7 +138,7 @@ export default function SignUp() {
   }, [dob]);
 
   return (
-    <div className="pt-10">
+    <div className="pt-10 pb-10">
       <div className="ml-5 mb-10 font-medium text-xl">회원가입</div>
       <div className="px-5">
         <div className="flex flex-col pb-[18px] mb-2">
@@ -146,10 +146,11 @@ export default function SignUp() {
             이메일
           </span>
           <input
+            autoComplete="off"
             value={email}
             type="text"
             onChange={onChangeEmail}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:border-2 focus:border-VsGreen focus:outline-none"
             placeholder="이메일을 입력하세요."
           ></input>
           {email.length ? (
@@ -169,9 +170,10 @@ export default function SignUp() {
             비밀번호
           </span>
           <input
+            autoComplete="off"
             type="password"
             onChange={onChangePassword}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:border-2 focus:border-VsGreen focus:outline-none"
             placeholder="비밀번호를 입력하세요."
           ></input>
           {password.length > 0 && (
@@ -191,9 +193,10 @@ export default function SignUp() {
             비밀번호 확인
           </span>
           <input
+            autoComplete="off"
             type="password"
             onChange={onChangePasswordConfirm}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:border-2 focus:border-VsGreen focus:outline-none"
             placeholder="비밀번호 확인을 입력하세요."
           ></input>
           {passwordConfirm.length > 0 && (
@@ -213,9 +216,10 @@ export default function SignUp() {
             닉네임
           </span>
           <input
+            autoComplete="off"
             type="text"
             onChange={onChangeNickname}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:border-2 focus:border-VsGreen focus:outline-none"
             placeholder="닉네임을 입력하세요."
           ></input>
           {nickname.length > 0 ? (
@@ -310,10 +314,11 @@ export default function SignUp() {
             생년월일
           </span>
           <input
+            autoComplete="off"
             type="text"
             value={dob}
             onChange={(e) => setDob(e.target.value)}
-            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:outline-VsGreen"
+            className="pl-4 text-sm rounded-lg border border-[#d3d3d3] w-full h-12 placeholder:text-[#D3D3D3] font-normal focus:border-2 focus:border-VsGreen focus:outline-none"
             placeholder="생년월일 8자리를 입력하세요."
           />
           {dob.length ? (

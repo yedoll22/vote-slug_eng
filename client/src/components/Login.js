@@ -21,7 +21,7 @@ export default function Login() {
   const [isEmail, setIsEmail] = useState(false);
 
   useEffect(() => {
-    if (isLogin) history.push("/home");
+    if (isLogin) history.replace("/home");
   }, [isLogin]);
 
   const loginButtonClass = () => {
@@ -33,20 +33,20 @@ export default function Login() {
 
   const emailInputClass = () => {
     if (isEmail && userInfo.email.length)
-      return "w-full h-[48px] rounded-[8px] border border-VsGreen pl-4 text-sm font-normal focus:outline-VsGreen";
+      return "w-full h-[48px] rounded-[8px] border-2 border-VsGreen pl-4 text-sm font-normal focus:outline-none focus:border-2 focus:border-VsGreen";
     else if (!isEmail && userInfo.email.length)
-      return "w-full h-[48px] rounded-[8px] border border-VsRed pl-4 text-sm font-normal focus:outline-VsGreen";
+      return "w-full h-[48px] rounded-[8px] border-2 border-VsRed pl-4 text-sm font-normal focus:outline-none focus:border-2";
     else if (!isEmail && !userInfo.email.length)
-      return "w-full h-[48px] rounded-[8px] border border-[#D3D3D3] pl-4 text-sm font-normal focus:outline-VsGreen";
+      return "w-full h-[48px] rounded-[8px] border border-[#D3D3D3] pl-4 text-sm font-normal focus:outline-none focus:border-2 focus:border-VsGreen";
     else
-      return "w-full h-[48px] rounded-[8px] border border-[#D3D3D3] pl-4 text-sm font-normal focus:outline-VsGreen";
+      return "w-full h-[48px] rounded-[8px] border border-[#D3D3D3] pl-4 text-sm font-normal focus:outline-none focus:border-2 focus:border-VsGreen";
   };
 
   const passwordInputClass = () => {
     if (loginErrorMessage === "비밀번호가 틀렸습니다.")
-      return "w-full h-[48px] rounded-[8px] border border-VsRed pl-4 text-sm font-normal focus:outline-VsGreen";
+      return "w-full h-[48px] rounded-[8px] border border-VsRed pl-4 text-sm font-normal focus:border-2 focus:border-VsGreen focus:outline-none";
     else
-      return "w-full h-[48px] rounded-[8px] border border-[#d3d3d3] pl-4 text-sm font-normal focus:outline-VsGreen";
+      return "w-full h-[48px] rounded-[8px] border border-[#d3d3d3] pl-4 text-sm font-normal focus:border-VsGreen focus:border-2 focus:outline-none";
   };
 
   const emailHandler = (e) => {
@@ -81,7 +81,7 @@ export default function Login() {
       .then((res) => {
         dispatch(loginHandler());
         dispatch(getAccessToken(res.data.accessToken));
-        history.push("/");
+        history.replace("/");
       })
       .catch((err) => {
         console.log(err.response.data);
@@ -99,10 +99,10 @@ export default function Login() {
     <>
       <div className="pt-10 pb-[17px]">
         {/* <div className="w-full h-[120px] bg-[#8BCDFE] mb-10"></div> */}
-        <div className="px-12 py-8 mb-10">
+        <div className="px-[55px] py-8 mb-10">
           <img
             className="w-full"
-            src="/images/vslogo.svg"
+            src="/images/vslogo-new.png"
             alt="voteslug-logo"
           />
         </div>

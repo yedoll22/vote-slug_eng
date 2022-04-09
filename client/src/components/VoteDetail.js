@@ -164,7 +164,7 @@ export default function VoteDetail() {
   return (
     <>
       <div>
-        <div className="flex py-[19px] px-5 border-b-[1px] border-[#f2f2f2]">
+        <div className="flex py-[19px] px-5 border-b-[4px] border-[#f2f2f2]">
           <img
             onClick={() => {
               history.goBack();
@@ -173,7 +173,12 @@ export default function VoteDetail() {
             className="mr-2 cursor-pointer"
             alt="gobackarrow"
           ></img>
-          <img src="/images/vslogo.svg" alt="vslogo"></img>
+          <img
+            className="w-[131.39px] h-5 mt-[0.5px]"
+            src="images/vslogo-new.png"
+            alt="voteslug-logo"
+            onClick={() => history.push("/home")}
+          />
         </div>
         <div className="pt-6">
           <div className="flex items-center justify-between px-5 text-xl font-medium text-[#222222]">

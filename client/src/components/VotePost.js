@@ -56,7 +56,7 @@ export default function VotePost() {
         { headers: { Authorization: `Bearer ${accessToken}` } }
       )
       .then((res) => {
-        history.push("/home");
+        history.replace("/home");
         setTimeout(() => {
           dispatch(displayModal());
         }, 200);
@@ -71,7 +71,7 @@ export default function VotePost() {
           err.response.status === 403 ||
           err.response.status === 404
         ) {
-          history.push("/login");
+          history.replace("/login");
         } else {
           console.log(err);
         }
@@ -81,14 +81,14 @@ export default function VotePost() {
     <>
       <div className="h-full bg-white">
         <div className="flex py-[19px] px-5 justify-between border-b-[1px] border-[#f2f2f2]">
-          <img src="images/vslogo.svg" alt="vslogo"></img>
           <img
-            onClick={() => history.push("/mypage")}
-            src="images/mypage.svg"
-            alt="mypage"
-          ></img>
+            className="w-[131.39px] h-5 mt-[0.5px]"
+            src="images/vslogo-new.png"
+            alt="voteslug-logo"
+            onClick={() => history.replace("/home")}
+          />
         </div>
-        <div className="h-2 w-full bg-[#f2f2f2]"></div>
+        <div className="h-1 w-full bg-[#f2f2f2]"></div>
         <div className="pt-6 pb-10 overflow-y-visible">
           <div className="px-5">
             <div className="mb-[50px]">
@@ -100,7 +100,7 @@ export default function VotePost() {
                   onChange={votePostinputHandler("voteTitle")}
                   placeholder="투표 제목을 입력하세요."
                   type="text"
-                  className="resize-none min-h-[76px] border-[1px] border-[#D3D3D3] w-full px-[16px] placeholder:leading-[20px] py-[20px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:outline-VsGreen break-all no-scrollbar"
+                  className="resize-none min-h-[76px] border-[1px] border-[#D3D3D3] w-full px-[16px] placeholder:leading-[20px] py-[20px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:border-2 focus:border-VsGreen focus:outline-none break-all no-scrollbar"
                 />
               </div>
               <div className="pb-[18px] mb-2">
@@ -110,7 +110,7 @@ export default function VotePost() {
                   onChange={votePostinputHandler("voteOption1")}
                   placeholder="선택지의 내용을 입력하세요."
                   type="text"
-                  className="resize-none  min-h-[76px] border-[1px] border-[#D3D3D3] w-full px-[16px] placeholder:leading-[20px] py-[20px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:outline-VsGreen break-all no-scrollbar"
+                  className="resize-none  min-h-[76px] border-[1px] border-[#D3D3D3] w-full px-[16px] placeholder:leading-[20px] py-[20px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:border-2 focus:border-VsGreen focus:outline-none break-all no-scrollbar"
                 />
               </div>
               <div className="pb-[18px] mb-2">
@@ -120,7 +120,7 @@ export default function VotePost() {
                   onChange={votePostinputHandler("voteOption2")}
                   placeholder="선택지의 내용을 입력하세요."
                   type="text"
-                  className="resize-none min-h-[76px] border-[1px] border-[#D3D3D3] w-full placeholder:leading-[20px] py-[20px] px-[16px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:outline-VsGreen break-all no-scrollbar"
+                  className="resize-none min-h-[76px] border-[1px] border-[#D3D3D3] w-full placeholder:leading-[20px] py-[20px] px-[16px] text-[14px] font-normal placeholder:text-[#7A7A7A] rounded-[8px] focus:border-2 focus:border-VsGreen focus:outline-none break-all no-scrollbar"
                 />
               </div>
 
@@ -224,34 +224,20 @@ export default function VotePost() {
               </div>
             </div>
 
-            {/* <div
-              className="bottom-[10%] z-50 w-[60%] max-w-[500px] transition-all duration-1000 translate-x-4"
-              role="alert"
-            >
-              <div className="bg-VsRed flex items-center text-white font-medium rounded-r px-4 py-2">
-                <svg
-                  className="fill-current h-5 w-5 text-white mr-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-                </svg>
-                모든 항목을 입력해주세요.
-              </div>
-            </div> */}
-
-            <button
-              onClick={() => history.goBack()}
-              className="z-10 sticky text-[14px] font-medium text-[#7A7A7A] px-[19px] mr-[1px] h-9"
-            >
-              취소
-            </button>
-            <button
-              onClick={votePostHandler}
-              className="z-10 sticky bg-VsGreen rounded-[8px] h-9 px-4 text-[14px] font-medium"
-            >
-              투표 만들기
-            </button>
+            <div className="flex w-full justify-end pr-5">
+              <button
+                onClick={() => history.goBack()}
+                className="z-10 text-[14px] font-medium text-[#7A7A7A] px-[19px] h-9"
+              >
+                취소
+              </button>
+              <button
+                onClick={votePostHandler}
+                className="z-10 bg-VsGreen rounded-[8px] px-4 text-[14px] font-medium"
+              >
+                투표 만들기
+              </button>
+            </div>
           </div>
         </div>
       </div>

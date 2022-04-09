@@ -62,7 +62,7 @@ const CommentPost = () => {
       <div className="flex justify-center py-[19px] font-medium text-xl">
         코멘트 작성
       </div>
-      <div className="h-2 w-full bg-[#F2F2F2]"></div>
+      <div className="h-1 w-full bg-[#F2F2F2]"></div>
       <div className="pt-[33px] px-5">
         <textarea
           autoComplete="off"

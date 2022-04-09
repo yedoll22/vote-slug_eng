@@ -40,7 +40,7 @@ export default function Nickname() {
         }
       )
       .then((res) => {
-        history.push("/mypage");
+        history.replace("/mypage");
       })
       .catch((err) => {
         if (err.response.status === 401) {
@@ -63,9 +63,14 @@ export default function Nickname() {
             src="/images/go-back-arrow.svg"
             alt=""
           />
-          <img src="/images/vslogo.svg" alt="" />
+          <img
+            className="w-[131.39px] h-5 mt-[0.5px]"
+            src="images/vslogo-new.png"
+            alt="voteslug-logo"
+            onClick={() => history.replace("/home")}
+          />
         </div>
-        <div className="h-2 w-full bg-[#f2f2f2]"></div>
+        <div className="h-1 w-full bg-[#f2f2f2]"></div>
         <div className="px-5 pb-6">
           <div className="pt-6 text-xl font-medium mb-10">닉네임 변경</div>
           <div className="mb-2 flex flex-col">
