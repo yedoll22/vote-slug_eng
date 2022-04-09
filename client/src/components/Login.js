@@ -1,7 +1,7 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getAccessToken } from "../slice/accessTokenSlice";
 import { loginHandler } from "../slice/isLoginSlice";
 
@@ -9,6 +9,7 @@ export default function Login() {
   const dispatch = useDispatch();
   // 이메일, 비밀번호 확인
   const history = useHistory();
+  const isLogin = useSelector((state) => state.isLogin.value);
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
@@ -18,6 +19,10 @@ export default function Login() {
   const [loginErrorMessage, setLoginErrorMessage] = useState("");
   // 유효성 검사
   const [isEmail, setIsEmail] = useState(false);
+
+  useEffect(() => {
+    if (isLogin) history.push("/home");
+  }, [isLogin]);
 
   const loginButtonClass = () => {
     if (userInfo.email.length && userInfo.password.length && isEmail)
@@ -91,116 +96,122 @@ export default function Login() {
   };
 
   return (
-    <div className="pt-10 pb-[17px]">
-      {/* <div className="w-full h-[120px] bg-[#8BCDFE] mb-10"></div> */}
-      <div className="px-12 py-8 mb-10">
-        <img className="w-full" src="/images/vslogo.svg" alt="voteslug-logo" />
-      </div>
-      <div className="px-5 mb-4">
-        <div className="flex flex-col pb-[18px] mb-2">
-          <span className="pl-4 mb-2 text-base font-medium">이메일</span>
-          <div className="relative">
-            <input
-              autoComplete="off"
-              onChange={emailHandler}
-              value={userInfo.email}
-              name="email"
-              type="text"
-              className={emailInputClass()}
-              placeholder="이메일을 입력하세요."
-            ></input>
-            {userInfo.email.length > 0 ? (
-              <img
-                onClick={() => {
-                  setUserInfo({ ...userInfo, email: "" });
-                  setLoginErrorMessage("");
-                }}
-                className="cursor-pointer absolute right-3 top-3.5 z-10"
-                src="/images/delete.svg"
-                alt=""
-              />
-            ) : null}
-            {loginErrorMessage ===
-            "존재하지 않는 이메일입니다." ? null : userInfo.email.length ? (
-              <span
-                className={
-                  isEmail
-                    ? "pl-2 text-sm text-VsGreen"
-                    : "pl-2 text-sm text-VsRed"
-                }
-              >
-                {emailMessage}
-              </span>
-            ) : null}
-            {loginErrorMessage === "존재하지 않는 이메일입니다." ? (
-              <div className="pt-1 pl-2 text-sm text-VsRed">
+    <>
+      <div className="pt-10 pb-[17px]">
+        {/* <div className="w-full h-[120px] bg-[#8BCDFE] mb-10"></div> */}
+        <div className="px-12 py-8 mb-10">
+          <img
+            className="w-full"
+            src="/images/vslogo.svg"
+            alt="voteslug-logo"
+          />
+        </div>
+        <div className="px-5 mb-4">
+          <div className="flex flex-col pb-[18px] mb-2">
+            <span className="pl-4 mb-2 text-base font-medium">이메일</span>
+            <div className="relative">
+              <input
+                autoComplete="off"
+                onChange={emailHandler}
+                value={userInfo.email}
+                name="email"
+                type="text"
+                className={emailInputClass()}
+                placeholder="이메일을 입력하세요."
+              ></input>
+              {userInfo.email.length > 0 ? (
+                <img
+                  onClick={() => {
+                    setUserInfo({ ...userInfo, email: "" });
+                    setLoginErrorMessage("");
+                  }}
+                  className="cursor-pointer absolute right-3 top-3.5 z-10"
+                  src="/images/delete.svg"
+                  alt=""
+                />
+              ) : null}
+              {loginErrorMessage ===
+              "존재하지 않는 이메일입니다." ? null : userInfo.email.length ? (
+                <span
+                  className={
+                    isEmail
+                      ? "pl-2 text-sm text-VsGreen"
+                      : "pl-2 text-sm text-VsRed"
+                  }
+                >
+                  {emailMessage}
+                </span>
+              ) : null}
+              {loginErrorMessage === "존재하지 않는 이메일입니다." ? (
+                <div className="pt-1 pl-2 text-sm text-VsRed">
+                  {loginErrorMessage}
+                </div>
+              ) : null}
+            </div>
+          </div>
+          <div className="flex flex-col pb-[18px] mb-4">
+            <span className="pl-4 mb-2 text-base font-medium">비밀번호</span>
+            <div className="flex relative">
+              <input
+                autoComplete="off"
+                onChange={passwordHandler}
+                value={userInfo.password}
+                name="password"
+                type="password"
+                className={passwordInputClass()}
+                placeholder="비밀번호를　입력하세요."
+              ></input>
+              {userInfo.password.length > 0 ? (
+                <img
+                  onClick={() => {
+                    setUserInfo({ ...userInfo, password: "" });
+                    setLoginErrorMessage("");
+                  }}
+                  className="cursor-pointer absolute right-3 top-3.5 z-10"
+                  src="/images/delete.svg"
+                  alt=""
+                />
+              ) : null}
+            </div>
+            {loginErrorMessage === "비밀번호가 틀렸습니다." ? (
+              <div className="pt-2 pl-2 text-sm text-VsRed">
                 {loginErrorMessage}
               </div>
             ) : null}
           </div>
+          <button
+            disabled={!(userInfo.email && userInfo.password)}
+            // 로그인 버튼 비활성화 추가
+            onClick={loginRequestHandler}
+            className={loginButtonClass()}
+          >
+            로그인
+          </button>
         </div>
-        <div className="flex flex-col pb-[18px] mb-4">
-          <span className="pl-4 mb-2 text-base font-medium">비밀번호</span>
-          <div className="flex relative">
-            <input
-              autoComplete="off"
-              onChange={passwordHandler}
-              value={userInfo.password}
-              name="password"
-              type="password"
-              className={passwordInputClass()}
-              placeholder="비밀번호를　입력하세요."
-            ></input>
-            {userInfo.password.length > 0 ? (
-              <img
-                onClick={() => {
-                  setUserInfo({ ...userInfo, password: "" });
-                  setLoginErrorMessage("");
-                }}
-                className="cursor-pointer absolute right-3 top-3.5 z-10"
-                src="/images/delete.svg"
-                alt=""
-              />
-            ) : null}
-          </div>
-          {loginErrorMessage === "비밀번호가 틀렸습니다." ? (
-            <div className="pt-2 pl-2 text-sm text-VsRed">
-              {loginErrorMessage}
-            </div>
-          ) : null}
+        <div className="flex justify-center py-[11px] mb-[58px]">
+          <button
+            onClick={() => {
+              history.push("/home");
+            }}
+            className="text-sm text-[#7A7A7A] font-medium"
+          >
+            로그인 없이 둘러보기
+          </button>
         </div>
-        <button
-          disabled={!(userInfo.email && userInfo.password)}
-          // 로그인 버튼 비활성화 추가
-          onClick={loginRequestHandler}
-          className={loginButtonClass()}
-        >
-          로그인
-        </button>
+        <div className="flex justify-center py-[11px]">
+          <span className="text-[#7a7a7a] font-normal text-sm">
+            보트슬러그 계정이 없으신가요？
+          </span>
+          <button
+            onClick={() => {
+              history.push("/signup");
+            }}
+            className="text-[#7CE0AE] font-medium text-sm"
+          >
+            가입하기
+          </button>
+        </div>
       </div>
-      <div className="flex justify-center py-[11px] mb-[58px]">
-        <button
-          onClick={() => {
-            history.push("/home");
-          }}
-          className="text-sm text-[#7A7A7A] font-medium"
-        >
-          로그인 없이 둘러보기
-        </button>
-      </div>
-      <div className="flex justify-center py-[11px]">
-        <span className="text-[#7a7a7a] font-normal text-sm">
-          보트슬러그 계정이 없으신가요？
-        </span>
-        <button
-          onClick={() => {
-            history.push("/signup");
-          }}
-          className="text-[#7CE0AE] font-medium text-sm"
-        >
-          가입하기
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
