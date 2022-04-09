@@ -3,27 +3,23 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Modal from "./Modal";
-import Token from "./Token";
+
+axios.defaults.withCredentials = true;
 
 export default function Mypage() {
   const history = useHistory();
   const accessToken = useSelector((state) => state.accessToken.value);
+  const isLogin = useSelector((state) => state.isLogin.value);
   const [userInfo, setUserInfo] = useState({});
   const [isLogoutAction, setIsLogoutAction] = useState(false);
   const [isSecessionAction, setIsSecessionAction] = useState(false);
 
-  useEffect(() => {
-    getUserInfo();
-  }, []);
-
-  const getUserInfo = async () => {
-    await axios
+  const getUserInfo = () => {
+    axios
       .get(`${process.env.REACT_APP_SERVER_EC2_ENDPOINT}/user/mypage`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
         },
-        withCredentials: true,
       })
       .then((res) => {
         if (res.status === 200) {
@@ -32,13 +28,15 @@ export default function Mypage() {
         }
       })
       .catch((err) => {
-        if (err.response.status === 500) {
-          //서버오류 페이지 만들어서 거기로 유저 이동
-        } else {
+        if (err.response.status === 401) {
           history.push("/login");
-        }
+        } else if (err.response.status === 500) console.log(err);
       });
   };
+
+  useEffect(() => {
+    getUserInfo();
+  }, [isLogin]);
 
   return (
     <>
@@ -63,10 +61,7 @@ export default function Mypage() {
           </div>
         </div>
 
-        <div className="flex px-5 text-graytypo text-[14px] font-normal mb-[39px]">
-          {/* <div className="mr-4">만든 투표 : 123,123</div>
-          <div>참여한 투표 : 123,123</div> */}
-        </div>
+        <div className="flex px-5 text-graytypo text-[14px] font-normal mb-[39px]"></div>
 
         <div className="px-5 text-base font-normal mb-2">회원 정보</div>
         <div className="bg-[#F4F4F4] h-[1px] mb-4"></div>

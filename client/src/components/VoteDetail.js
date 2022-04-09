@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { displayModal } from "../slice/modalSlice";
 import Modal from "./Modal";
 import Comment from "./Comment";
-import Token from "./Token";
 
 axios.defaults.withCredentials = true;
 
@@ -142,7 +141,7 @@ export default function VoteDetail() {
 
   useEffect(() => {
     voteInfoHandler();
-  }, [participation]);
+  }, [participation, isLogin]);
 
   const postDataHandler = (key) => () => {
     setPostData({ voteId: voteId, [key]: true });

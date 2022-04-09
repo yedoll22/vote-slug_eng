@@ -27,7 +27,7 @@ const Token = () => {
           history.push("/login");
         } else if (err.response.status === 500) console.log(err);
       });
-  }, [location.pathname]);
+  }, [location]);
 
   return null;
 };

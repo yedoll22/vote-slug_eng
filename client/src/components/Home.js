@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { setVoteFilter } from "../slice/voteFilterSlice";
 import { displayModal } from "../slice/modalSlice";
 import Modal from "./Modal";
-import Token from "./Token";
 
 axios.defaults.withCredentials = true;
 
