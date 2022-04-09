@@ -89,7 +89,7 @@ const Modal = ({
         dispatch(removeAccessToken());
         dispatch(setVoteFilter("latest"));
         dispatch(logoutHandler());
-        history.push("/login");
+        history.replace("/login");
       });
   };
 
@@ -105,7 +105,7 @@ const Modal = ({
         dispatch(setVoteFilter("latest"));
         dispatch(logoutHandler());
         dispatch(removeAccessToken());
-        history.push("/");
+        history.replace("/");
       })
       .catch((err) => console.log(err));
   };
