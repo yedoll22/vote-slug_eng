@@ -184,7 +184,10 @@ module.exports = {
 
   logout: async (req, res) => {
     res.clearCookie("refreshToken");
-    return res.status(200).json({ message: "logout complete" }).redirect("/");
+    return res
+      .status(200)
+      .json({ message: "logout complete" })
+      .redirect("/login");
   },
 
   getMyVote: async (req, res) => {

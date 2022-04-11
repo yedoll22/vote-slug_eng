@@ -20,9 +20,9 @@ export default function Login() {
   // 유효성 검사
   const [isEmail, setIsEmail] = useState(false);
 
-  useEffect(() => {
-    if (isLogin) history.replace("/home");
-  }, [isLogin]);
+  // useEffect(() => {
+  //   if (isLogin) history.replace("/home");
+  // }, [isLogin]);
 
   const loginButtonClass = () => {
     if (userInfo.email.length && userInfo.password.length && isEmail)
@@ -49,10 +49,26 @@ export default function Login() {
       return "w-full h-[48px] rounded-[8px] border border-[#d3d3d3] pl-4 text-sm font-normal focus:border-VsGreen focus:border-2 focus:outline-none";
   };
 
+  // const emailHandler = (e) => {
+  //   const emailRegex =
+  //     /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+  //   setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
+  //   if (!emailRegex.test(userInfo.email)) {
+  //     setEmailMessage("이메일 형식을 확인해주세요");
+  //     setIsEmail(false);
+  //   } else {
+  //     setEmailMessage("올바른 이메일 형식입니다");
+  //     setIsEmail(true);
+  //   }
+  // };
+
   const emailHandler = (e) => {
     const emailRegex =
-      /([\w-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-    setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
+      /([\w-.]+)@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.)|(([\w-]+.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(]?)$/;
+    setUserInfo({
+      ...userInfo,
+      [e.target.name]: e.target.value.replace(/^\s+|\s+$/gm, ""),
+    });
     if (!emailRegex.test(userInfo.email)) {
       setEmailMessage("이메일 형식을 확인해주세요");
       setIsEmail(false);
@@ -81,7 +97,7 @@ export default function Login() {
       .then((res) => {
         dispatch(loginHandler());
         dispatch(getAccessToken(res.data.accessToken));
-        history.replace("/");
+        history.replace("/home");
       })
       .catch((err) => {
         console.log(err.response.data);
@@ -155,6 +171,11 @@ export default function Login() {
               <input
                 autoComplete="off"
                 onChange={passwordHandler}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    loginRequestHandler();
+                  }
+                }}
                 value={userInfo.password}
                 name="password"
                 type="password"

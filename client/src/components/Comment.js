@@ -66,11 +66,11 @@ const Comment = ({ voteId }) => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <div className="font-light text-black text-sm break-all">
+                  <div className="font-light mr-1 text-black text-sm break-all">
                     {comment.content}
                   </div>
                   {comment.isMine && (
-                    <div className="flex text-[12px]">
+                    <div className="flex shrink-0 text-[12px]">
                       <div
                         onClick={() =>
                           history.push(

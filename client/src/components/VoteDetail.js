@@ -148,8 +148,18 @@ export default function VoteDetail() {
     dispatch(displayModal());
   };
 
-  const winnerClass = (optionPercent) => {
-    if (participation) {
+  const winnerClass = (optionPercent, right) => {
+    if (participation && right) {
+      if (optionPercent > 50) {
+        return "bg-VsGreenLight break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative cursor-pointer";
+      } else if (optionPercent === 50) {
+        return "bg-VsyellowLight break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative cursor-pointer";
+      } else {
+        return "break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative cursor-pointer";
+      }
+    }
+
+    if (participation && !right) {
       if (optionPercent > 50) {
         return "bg-VsGreenLight break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer";
       } else if (optionPercent === 50) {
@@ -158,6 +168,9 @@ export default function VoteDetail() {
         return "break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer";
       }
     }
+
+    if (right)
+      return "hover:border-2 hover:border-VsGreen break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative cursor-pointer";
     return "hover:border-2 hover:border-VsGreen break-all h-[120px] flex justify-center items-center w-full p-2 border border-[#d3d3d3] rounded-[8px] relative mr-4 cursor-pointer";
   };
 
@@ -260,7 +273,7 @@ export default function VoteDetail() {
                 <button
                   value={"voteOption2"}
                   onClick={postDataHandler("voteOption2")}
-                  className={winnerClass(option2Percent)}
+                  className={winnerClass(option2Percent, "right")}
                 >
                   <div className="flex flex-col items-center justify-center">
                     <div className="mb-2">{voteData.voteOption2}</div>
