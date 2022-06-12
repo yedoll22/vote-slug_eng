@@ -1,0 +1,17 @@
+{
+  "plugins": ["prettier"],
+  "extends": ["eslint:recommended", "plugin:prettier/recommended", "react-app"],
+  "parserOptions": {
+    "ecmaVersion": 7,
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "node": true
+  },
+  "ignorePatterns": ["node_modules/", "postcss.config.js", ".prettierrc"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}
